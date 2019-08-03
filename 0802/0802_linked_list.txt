@@ -1,0 +1,93 @@
+﻿2. Linked list
+
+常见错误
+
+Key points:
+1. When you want to de-reference a ListNode, make sure it is not a NULL pointer.
+de-referene :
+	ListNode*p = new ListNode(10);    C++
+	ListNode p = new.....        Java
+
+dereference
+	...p->value       C++, PHP?
+        p.value           Java, Python?.... 
+
+2.Never ever lost the control of the head pointer of the LinkedList
+E1 <- E2       E3->E4->.....  En-> NULL	
+
+常见考题：
+No.1 interview question on linkedlist: how to reverse a linklist
+
+	Node1 -> Node2 -> Node3 ->.... Noden -> NULL
+         head
+   prev <- cur  .next     首先保存cur.next，随后将cur.next指向prev，
+          prev     cur    .next                            接下来向后移动 prev cur
+
+reversed: NULL <- Node1 <- Node2 <-.... <- Noden
+
+Solution1: iteration
+01:41:45
+
+
+Solution2: recursion
+***
+再次强调recursion关键：三个层次
+1.表象上：自己调用自己
+2.将大的问题转化为小一号的问题
+3.写code：最小问题是什么
+	  连接这些问题的数学表达式是什么?
+***
+
+base case就是将最终结果与之后的998个子问题连接起来
+
+除了subproblem之外有几处不同？
+1）NextNode.next = curr;//subproblem head 指向current node
+2）Curr.next = null;//current node's next is set to null
+
+DEMO 01:51:35 ~ 02:01:10
+
+iteration 从左到右反转
+recursion 从右到左反转
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

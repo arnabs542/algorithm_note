@@ -1,0 +1,85 @@
+﻿
+2. MERGE SORT
+Merge sort
+看第一节下半部分的图
+
+复杂度分析
+
+Time
+上半部分: O(2n) ???
+下半部分: O(n*log(n))
+
+Space
+O(n)
+冯诺依曼机（计算机）（命令不会同时执行，而分先后）
+课程第7行的代码处，需要将所有命令执行完才向下运行
+所有信息储存在call stack里面
+
+Discussion:
+（1. 能否sort link list？
+  可以
+  那么复杂度呢？
+  时间:
+  上半部分：变为nlogn
+  下半部分：不变
+  因此总时间复杂度不变
+
+（2. 变形题：(35:47)
+
+e.g.带字母的sort A1B2C3D4->ABCD1234
+只需要将下半部分的字符设定优先于数字就可以。
+
+e.g.如何反向呢？ABCD1234->A1B2C3D4
+ABCD1234
+A1B2C3D4
+
+反向考虑（课件中的树从下往上）
+ABCD1234的上一步是AB12CD34
+
+i.第一轮
+AB12CD34
+   ^
+   |
+ABCD1234
+
+C1   C2   C3   C4
+AB | CD | 12 | 34 
+     DC   21
+AB   12   CD   34
+
+ii.第二轮
+A1B2C3D4
+   ^
+   |
+AB12CD34
+
+A1B2   C3D4  
+  ^      ^
+  |      |
+AB12   CD34
+
+C1 C2 C3 C4
+A  B  1  2
+A  1  B  2
+
+
+"""
+i.首先分成八份：
+A B C D 1 2 3 4 
+ii.现在合成四个chunk 从小到大，数字优先
+C1   C2   C3   C4
+AB | CD | 12 | 34 
+AB DC 21 34
+"""
+
+
+3. QUICK SORT
+两个挡板三个区域的思想
+
+
+discussion
+1) Rainbow sort  三个挡板四个区域
+
+
+*** variable 的物理意义一定要明确 ***
+

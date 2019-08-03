@@ -1,0 +1,203 @@
+﻿看完第三节课
+看完两节css
+写好简历能够写的项目
+
+queue 和 stack 是物理意义 只要满足先进先出 后进后出就是 queue 或者stack
+只要满足先后顺序，可以是任何数据结构
+
+1. Queue
+1.1example: 先进先出 FIFO FIRST IN FIRST OUT
+1.2usage: Breadth-First Search related problem
+1.3 C++ REFERENCE
+1.4 典型问题
+	1.4.1 Tree printout by level
+	1.4.2 Sliding window problems
+
+2. Stack
+LIFO last in first out： like a box
+e.g. insertion order 1,2,3,4,,, in the stack, it looks like
+
+
+
+dequeue
+
+
+Four popular interview questions
+Q1.  how to implement a queue by using two stack
+
+S1|| 1 2 3 4 5
+S2|| 
+
+S1||          _
+S2|| 5 4 3 2 |1|-> get the first element
+
+Solution1:
+Stack1: To buffer all new element   ->push(x) goes to Stack1
+Stack2: To pop out the 1st element 
+	Case2.1 If stack2 is empty then we move all the element from stack 1 to stack 2 one by one. Then pop the top element from Stack 2.
+	Case2.2 If stack2 is not empty then call stack2.pop()
+
+Time comlexity Push()->O(1)
+               pop()->O(n)?
+
+
+Five elements(1 2 3 4 5 ... n)
+1st time call pop() n(pop from Stack1) + n(push to stack2) + 1(pop from stack2) = 2n + 1
+2nd time call pop() time = 1 
+3rd time call pop() time = 1
+...
+nth call pop()      time = 1
+
+Amortized time complexity = (2n + 1 + (n-1) * 1) = 3n/n = 3 -> O(1)
+平摊时间复杂度
+为什么平摊
+***往常通过因为第一次的操作很昂贵，但之后的操作很少*** 常与操作stack有关             -
+
+Q2. How to implement the min() function when using stack with O(1) complexity?
+往往stack使用复杂function，通常会使用多个stack或者其它的数据结构
+
+S1|| 1 3 2 5 -1 4 
+S2|| 
+
+Solution1: keep the add() and remove() function in sync between stack1 and stack2
+每次向stack1 push的时候，将当前最小值同时push到stack2中
+e.g. 
+
+S1|| 1 3 2 5 -1 4 
+S2|| 1 1 1 1 -1 -1
+
+Follow up question:
+How to optimize the space usage of stack2 assumptions there are a lot of duplicate elements in Stack1?
+
+S1|| 2 2 2 2 1 1 1 2 1 3 4 3 3 3 3 3 3
+S2|| 2 1
+
+WORK??
+NO   33:11
+S1|| 2 2 2 2 1 1 1 2 1
+S2|| 2 1
+
+USE A HASHMAP TO HELP
+
+***记录下来作为最小值进去到stack2的时候，stack1的size是多少，***
+每次向stack1 push的时候，将当前最小值，以及当时stack1的size属性同时push到stack2中，
+S1|| 2 2 2 2 1 1 1 2 1 3 4 3 3 3 3 3 3
+S2|| <2, stack1.size=1> <1, stack1.size=5>
+
+Q3.How to sort numbers with three (follow up: two) stacks?
+
+
+ 6 1 2 6 9 1
+min 6 
+temp 6 
+size 1
+s1|| 1 1 2 6 6 9
+s2|| 
+
+使用更少的变量
+***sort 过的最好待在同一个stack里面，减少来回改变***
+
+1）假设没有重复数字
+只需要global min 一个变量
+while(stack2.top()>= global_min){
+    keep popping...... back to stack1
+}
+
+2) follow up 如果有重复的数字呢？
+
+加一个 counter
+
+push 回stack1 时count 有多少个 global min，不push 它们，最后向stack2 push counter 个数的global min
+
+Q4. How to use multiple stacks to implement a de-que(deque)? preferrly O(1) amortized time for all operations.
+
+    1 2 3 4 5 6 7 8 9
+headL               headR
+
+deque： 两面都可以进出的queue
+ 
+Solution 1
+
+1 2 3 4 STACK1|| ||STACK2 6 7 8 9 
+
+WORK WITH HIGH COMPLEXITY Amortized time = O(n)
+
+Solution 2
+with three stacks
+
+1 2 3 4 ||STACK1  STACK2|| 6 7 8 9 
+
+STACK 3||
+
+if one side is empty
+1. HALF STACK2 SIZE TO STACK3
+       STACK1|| ||STACK2 6 7 
+
+       STACK3|| 9 8 
+
+2. REMAIN STACK2 TO STACK1, STACK3 TO STACK2
+  6 7  STACK1|| ||STACK2 8 9 
+
+       STACK3|| 
+
+***面试官的hint  一定要用***
+
+Complexity?
+Amortized time = O(0.5n (2->3) + 0.5n (2->1) + 0.5n (3->2) + 0.5n(???) ) / n = O(2) = O(1)
+
+
+Disscussion 
+什么情况要往stack上考虑
+answer：从左到右linear scan一个结构时，如果要不断回头看左边的新元素时，往往要用到stack
+
+
+1.Histogram 中找最大的长方形
+2.reverse polish notation 逆波兰表达式 a*(b+c) -> abc+*   (post-fix)
+
+in fix      post fix
+a*(b+c)  ->  abc+*
+a = 2    b = 1    c = 3    ->     213+*
+
+post fix -> result
+input = 213+*
+           ^
+stack || 2 1 3
+ 
+直到运算符，选择stack最近的两个
+
+1 + 3 = 4， push 回 stack
+
+input = 213+*
+            ^
+stack || 2 4
+
+运算符，选择stack最近的两个
+2*4 = 8
+
+stack || 8
+
+in fix -> post fix
+
+shunting yard algorithm
+
+3. string 的 duplicate
+student...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

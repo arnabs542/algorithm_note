@@ -1,0 +1,5 @@
+1. pay the gas bill
+2. sun grid engine, locally or aws parallelcluster 2:00 - 5:00 8:00 - 9:00
+3. Django2 tutorial 5:00 - 6:30
+4. pypypy.cn 
+5. resume 1 - 2 projects describtion 9:00 - 10:00

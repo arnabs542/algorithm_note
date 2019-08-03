@@ -1,0 +1,243 @@
+﻿0731
+设计一下 irap 的流程图
+看算法课第二节
+看完两部分css
+买洗头的,买牙膏
+
+第二节
+Recursion
+
+表象上：
+function calls itself，收敛的
+实质上：
+boil down a big problem to smaller sizes (size -1 , size -2 ,  size/2 ,,, 1)
+implementation 上：
+a) base case: smallest problem to solve
+b) recursive rule: how to make a problem smaller
+
+Q1:
+fib 斐波那契
+
+*** 如何分析时间空间复杂度
+
+		F(4)
+             /         \
+	F(3)		F(2)
+      /     \          /     \
+    F(2)    F(1)     F(1)    F(0)
+   /    \ 
+F(1)    F(0)
+
+不确定就画出树
+这一题中每一个树的node都是1次计算，所以就是树树的node
+
+Time = 1 + 2 + 4 + ... 2^(n-1) = O(2^n)
+Trick: For binary tree, the number of all leaf nodes in the binary tree's leaf level is larger than the rest nodes in the tree
+Thus, we only care about the nodes in the leaf level
+
+**********
+Space = O(n) = how manay call stacks are there in the recursion tree => level of recursion tree
+**********
+
+recursion 的空间复杂度，只与recursion tree 的层数有关，与别的无关
+
+*** Call stack:
+1. global accessible resource
+2. Usage: store the local information for each recursion function
+
+40 min 左右 详细分析call stack 的原理
+
+在fib中，每一个level是O(1)， 总共是O(n)
+
+DISS:
+MERGE SORT call stack 呢？
+每一个level 是O(N)
+
+Q2:
+Example question: how to calculate a^b (where is an integer and b is also an integer, we do not care about the corner case where a = 0 or b < 0 for now)
+
+a = 2
+b = 1000
+
+2^1000 ???
+
+1. base case b == 0
+3. recursive rule
+   -> 2^999 -> 2^998 -> ... -> 2^1
+
+Time: O(n)
+Space: O(n)
+
+怎么样更优化呢？
+
+1. base case b == 0
+2. recursive rule
+  -> 2^500 -> 2^250 -> ... -> 2^1
+
+def a_pow_b(a,b):
+  if b == 1:
+    return a
+  else b == 0:
+    return 1
+  if b % 2 == 0:
+    temp = a_pow_b(a, b/2)
+    return temp*temp
+  else:
+    temp = a_pow_b(a,(b+1)/2)
+    return temp*temp/a
+
+Time: O(lob(b))
+Space: O(log(b))
+
+
+
+
+
+
+
+Binary search:
+what's binary search
+
+活用binary search
+
+code:
+def bs(sorted_arr, tar):
+    if sorted_arr == None or len(sorted_arr) == 0: 
+        return -1
+    left, right = 0, len(sorted_arr) - 1
+    while left <= right:
+        mid = int(left + (right - left) / 2)
+        if sorted_arr[mid] == tar:
+            return mid
+        elif sorted_arr[mid] > tar:
+            right = mid - 1 
+        else:
+            left = mid + 1
+    return -1
+
+binary search的关键：是不是进得去while 循环，是不是出的去while循环
+
+* follow up 1：
+二维的array如何使用binary search
+[[1,2,3,4],
+ [5,6,7,8],
+ [9,10,11,12]]
+
+### solution 1
+使用双向的binary search 
+# 2d array binary_Search
+# in the code the col and row are reverse
+def two_d_bs(sorted_2darr, tar):
+    if sorted_2darr == None or len(sorted_2darr) == 0 or len(sorted_2darr[0]) == 0:
+        return -1
+    row_left, row_right = 0, len(sorted_2darr[0]) - 1  # i.e.   the col id   (the index for a row)
+    col_left, col_right = 0, len(sorted_2darr) - 1 # i.e. the row id of the  (the index for a column)
+    while col_left <= col_right:
+        col_mid = col_left + int((col_right - col_left)/2)
+        col_arr = sorted_2darr[col_mid]
+        if col_arr[row_left] <= tar <= col_arr[row_right]: 
+            while row_left <= row_right:
+                row_mid = row_left + int((row_right - row_left)/2)
+                if col_arr[row_mid] == tar:
+                    return row_mid, col_mid
+                elif col_arr[row_mid] > tar:
+                    row_right = row_mid - 1
+                else:
+                    row_left = row_mid + 1
+        elif col_arr[row_left] > tar:
+            col_right = col_mid - 1
+        else:
+            col_left = col_mid + 1
+
+    return -1
+
+
+1:34:05 将二维转化为一维的binary search，找到一维位置再转化为2d的位置。
+
+1:47:00
+为什么不能 mid +- 1
+
+特例：可能会漏掉结果
+1）如果left < right - 1
+L M   R    T = 3
+1 2 3 4
+
+下一次的结果，L 到了我们要的结果，但是算法却结束，因为left 已经==right - 1，这时M没有更新，漏掉了结果
+  M L R    T = 3
+1 2 3 4
+
+2）而left < right - 1不会出现这种情况
+  M L R    T = 3
+1 2 3 4
+
+因为此时算法没有结束，left 仍然小于right
+    M
+    L R    T = 3
+1 2 3 4
+
+这是M等于T，算法结束，发现T
+
+再次强调*** binary search 
+每次淘汰的必定是十分确定以及肯定不是我们需要目标的object
+
+
+***binary search 的变种，都是使用的和模板一样的变种类型binary search
+***但不要背code，要理解
+variant 1.1 找离target 最近的
+variant 1.2 找第一个出现的
+1:56:30 进一步分析理解binary search: 每次淘汰的必定是十分确定以及肯定不是我们需要目标的object
+
+variant 1.3 找最后一个出现的：
+比较：01:58:43
+
+variant 1.4 找离target最近的前k个数字
+先找cloest的id，然后中心开花，找附近的k个数字
+
+variant 2.0
+Given a sorted dictionary with ***unkown size***, how to determine whether a word is in this dictionary or not
+example: target = 9999
+
+dictionary[x] = {1,2,4,14,15,.....7686433}
+Assumption if a[index] == Null then we know the size of dictionary is < index.
+
+不确定上限，因此right不确定
+假设right 为
+1
+2
+4
+8
+，，，
+2^i
+
+直到 a[index] 为null
+或者 
+target < a[2^i]，在a[2^(i-1)]和a[2^i]之间继续进行binary search
+
+solution
+
+1：do for loop to keep jumping 2^i steps, until out of the boundary
+2: run binary search 
+
+solution follow up
+How about jumps 10 times each time? which one is better?
+
+定性分析
+1 to jump out ten times is better
+2 to jump in two times jump is better
+
+定量分析                2 times                     10 times
+to jump out    :      log_2(n)                     log_10(n)
+to jump in     :      log_2(2n)                    log_2(10n)
+ 
+two times - ten times
+log_2(n) + log_2(2n) - (log_10(n) - log_2(10n)) < > = 0
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+1:00 - 4:00 lai offer lesson 1
+4:00 - 6:00 web stuff
+6:00 - 8:00 leet code
+
+time complexity
+### space complexity:how much memory does it need to run this algo
+*** auxillary space complexity: is the extra space of temporary space used by an algo.
+space com is equal auxillary space com
+
+
+How to write good code
+1. document your assumptions (e.g. asc or deasc in sorting)
+2. explain your approach and how you intend to solve the problem
+3. provide code comments where applicable (e.g. the arags in your function)
+4. explain the big 0 run time complecity of your solution and justify your ansert
+5. identify any additional data structure you used and justify why you used them (e.g. why use a swap variable in the selection sorting)
+6. only provide your best answer to each part of the question (*** must provide the best answer)
+
+explain the code:
+from high level to low level:
+1. input output of the method
+2. detail structure (e.g. for loop), what they do (e.g. each for loop does sth)
+
+selection sort
+## selection sort for stack
+1. use two extra stack to implement selection sort
+2. how about one extra stack (will be covered later)
+
+

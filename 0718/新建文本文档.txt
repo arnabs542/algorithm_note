@@ -1,0 +1,6 @@
+
+
+1 - 2 projects description 1:00 - 2:00
+aws hpc settings, ask ruchit about services 2:00 - 6:30
+django 8:00 - 10:00
+pypypy.cn
