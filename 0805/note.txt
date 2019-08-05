@@ -1,0 +1,5 @@
+﻿看完第三讲
+看bootstrap的gallary project
+看清irap的分析的数据结构，主要是图片
+建立好irap gallary
+
