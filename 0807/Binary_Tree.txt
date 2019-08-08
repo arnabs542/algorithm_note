@@ -1,0 +1,321 @@
+﻿  
+Class 4 Tree(Binary Tree, Binary Search Tree)
+
+Binary Tree
+Definition: at most two children node.
+Binary Tree Example:
+
+			10 == root
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2   7   12  20    <- all leaf node's level == 3
+                  / \
+                null null
+
+class TreeNode {
+	int value;
+	TreeNode* left;
+	TreeNode* right;
+	TreeNode* parent;
+}
+
+工业界应用：
+Too many to list all;
+e.g. social networks analysis
+     information indexing    像在手机计算机打字时的预测
+     information compression     压缩解压缩算法
+
+基本知识点1：tree traverse
+(1) pre-order 先访问自己的节点，再先后访问左右
+
+10 5 2 7 15 12 20
+
+			10 == root
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2   7   12  20    <- all leaf node's level == 3
+                  / \
+                null null
+
+void preOrder(TreeNode* root){
+	if (root == NULL) return;
+
+	cout << root->value << endl;
+	preOrder(root->left);
+	preOrder(root->right)
+}
+
+***强调要注意base case 最左节点的子节点，而不是最左节点 ***
+
+(2) in-order 先访问最左的节点，接着是自己的节点，最后是右边的节点
+
+
+2 5 7 10 12 15 20  
+
+void inOrder(TreeNode* root){
+	if (root == NULL) return;
+	
+	inOrder(root->left);
+	cout << root->value << endl;
+	inOrder(root->right)
+}
+
+(3) post-order
+2 7 5 12 20 15 10
+void postOrder(TreeNode* root)
+{
+	if (root == NULL) return;
+	postOrder(root->left);
+	postOrder(root->right);
+	cout << root->value << endl;
+	
+}
+
+*** Trick: base case usually refers to the null ChildNode below the leaf node.
+
+基本概念
+## Banlanced binary tree: is commonly defined as a binary tree in which the depth of the left and right subtrees of every node differ by 1 or less
+
+
+			10 == root
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2   7   12  20    <- all leaf node's level == 3
+
+
+			10 == root    blanced
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2   7   12  
+
+
+			10 == root    blanced
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2      12  
+
+## Complete binary tree: is a binary tree in which every, except possibly the last, is completely filled and all nodes are as far left as possible
+
+			10 == root    complete balanced
+		       /   \
+		     5      15 cur
+		    / \     / \
+		   2   7   12  20 
+
+## Binary Search Tree：for every single node in the tree, the values in its left subtree are all smaller than its value, and the values in its right subtree are all larger than its value.
+
+经典binary tree 是不允许有重复的
+
+如果有重复，可以在node 里面加一个counter
+
+Disscussion (High Level):
+
+## Binary tree 往往是最常见的，和recursion 结合最紧密的面试题目类型
+
+## Reasons
+   每层的node 具备的性质，传递的值和下一层的性质往往一致。比较容易定义recursive rule
+   Base case(generally): null pointer unser the leaf node
+   e.g.1 树高度：node 里最高的高度
+	最大的层数
+	图中黑色箭头是recursion 向下延伸的方向，每次call 一次recursion function
+	红色箭头是recursion 往回返回的方向
+	当一个结点收到两个children 返回的高度值时，选择两个里更大的继续加一
+   
+   e.g.2 树里有多少个nodes
+
+## Fundamental Knowledge:
+   Traversal of a binary tree
+   Definition
+	Balanced binary tree
+	Complete binary tree
+	Binary search tree (BST)
+	e.g. binary heap 时由什么定义的：complete binary tree
+
+
+Q1. get height of a binary tree
+
+public int getHeight(TreeNode root) {
+	if (root == null) {
+		return 0; //base case
+	}
+	
+	int left = getHeight(root.left);
+	int right = getHeight(root.right);
+	if (left < right){
+		return right + 1;
+	}
+	else {
+		return left + 1;
+	}
+}
+Complexity:
+Time: O(n)
+Space: O(n) == O(height)  *** 最坏情况  假设是线性，则为n
+
+Q1.1：How to determine whether a binary tree is a balanced binary tree?
+
+ublic int getHeight(TreeNode root) {
+	if (root == null) {
+		return 0; //base case
+	}
+	
+	int left = getHeight(root.left);
+	int right = getHeight(root.right);
+	if (left < right){
+		return right + 1;
+	}
+	else {
+		return left + 1;
+	}
+}
+
+My answer
+public boolean isBalanced(TreeNode root) {
+	if (root == null) return true;
+	
+	bool retLeft = isBalanced(root.left);	
+	bool retRight = isBalanced(root.right);
+
+	int leftHeight = getHeight(root.left);
+	int rightHeight = getHeight(root.right);
+
+	if (Math.abs(leftHeight - rightHeight) > 1) {
+		return false;
+	} else {
+		if (retLeft && retRight) {
+			return true
+		} else {
+			return false;
+		}
+	}
+}
+
+same??? 思考是否一样 有没有错
+
+Solution
+public boolean isBalanced(TreeNode root) {
+	if (root == null) return true;
+	
+	int leftHeight = getHeight(root.left);
+	int rightHeight = getHeight(root.right);
+
+	if (Math.abs(leftHeight - rightHeight) > 1) {
+		return false;
+	} else {
+		return isBalanced(root.left) && retRight = isBalanced(root.right);
+	}
+}
+
+*** recursion 套 recursion，不会的题目画递归树分析 *** 加分项
+			isBlance(root)      一个node每次调用两个getHeight函数 时间为O(n/2) +  O(n/2)
+		       /              \
+		n/2 nodes              n/2
+       isBalance(root.left)       isBalanced(root.right)    
+         O(n/4) + O(n/4)            O(n/4) + O(n/4)    两个node，每次调用两个getHeight 函数 时间为O(n/4) + O(n/4) + O(n/4) + O(n/4) 
+
+Complexity:
+Time: O(n logn)
+Space: O()
+
+Q2. How to judge whether a binary tree is symmetric?
+
+  
+boolean IsSymmetric (TreeNode one, TreeNode two) {
+	if (one == null && two == null) {
+		return true;
+	} else if (one == null || two == null) {
+		return false;
+	} else if (one.value != two.value) {
+		return false;
+	}
+	return IsSymmetric(one.left, two.right) &&
+	       IsSymmetirc(one.right, two.left)	
+}
+
+
+			10
+		   5a    |    5b        O(1)
+		1a    3a | 3b     1b    O(2)
+              2a 4a 6a 8a|8b 6b  4b 2b  O(4)
+            ......
+                                        O(n/2)
+
+*** 分析recursion 的时间复杂度，就是画树，然后看每一层的复杂度为多少相加 ***
+*** 分析空间，就是recursion tree里找那条直通底部的线，然后分析 ***
+
+Complexity:
+Time: O(n)   O(1 + 2 + 4 + ... + n/2)
+Space: O(n)
+      10
+     9   8
+    7     6
+   5       4
+   O(n/2)
+
+
+Q3. Let's assume if we tweak the leftchild with rightchild of an arbitary node in a binary tree, then the structure of the tree are not changed. Then how can we determine whether two binary trees' strutrues are identical?
+
+for example:
+
+case1:      8a         8b                       case2:     8a       8b
+          /   \       /  \                                /  \      / \
+         4a   5a     4b   5b                             4a  5a    5b  4b
+        /            /                                        \          \
+       7            7                                         7           7
+
+实际上两种情况：
+第一种情况：完全一样
+第二种情况：和上一题一样，对称
+
+boolean IsSymmetric (TreeNode one, TreeNode two) {
+	if (one == null && two == null) {
+		return true;
+	} else if (one == null || two == null) {
+		return false;
+	} else if (one.value != two.value) {
+		return false;
+	}
+	return (IsSymmetric(one.left, two.right) &&
+	        IsSymmetirc(one.right, two.left))   //case1   和上一题一样的对称情况
+                ||
+               (IsSymmetric(one.left, two.left) &&
+	        IsSymmetirc(one.right, two.right));   //case2   两棵树完全一样
+	}
+}
+
+Complexity
+Time
+Space
+
+*** 不会算 就画recursion tree ***
+
+For the algorithm:
+The recursion tree is:
+
+				    <root1 node, root2 node>
+
+ 			/  		|		|		\
+		IIden(LL,RL)      IIden(LR,RR)       IIden(LL,RR)      IIden(LR, RL)
+		/  |  |  \	    /  |  |  \	       /  |  |  \       ........
+
+
+if the original tree height is log2(n) then the recursion tree height is also log2(n)
+
+binary tree 1 2 4 8 16 32
+quadral tree 1 4 16 64 256 512
+
+所以对于四叉树，我们只需考虑最后一层子节点的个数,then
+Time = O(4^(log_2(n))) = 2^(2log_2(n)) = 2^(log_2(n^2)) = n^2
+
+Space = O(log_2(n)) 依然是recursion tree 的高度
+
+1:58:18
+
+
+
+
