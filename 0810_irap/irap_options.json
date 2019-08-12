@@ -1,0 +1,44 @@
+{
+    "method_dict": {
+        "mapper": "star",
+        "quantification": "featurecounts",
+        "de_method": "edger"
+    },
+    "meta_dict": {
+        "lib_fastq": {
+            "Lib0": [
+                "SRR933983.fastq.gz",
+                "SRR933986.fastq.gz"
+            ],
+            "Lib1": [
+                "SRR933984.fastq.gz",
+                "SRR933987.fastq.gz"
+            ],
+            "Lib2": [
+                "SRR933985.fastq.gz",
+                "SRR933988.fastq.gz"
+            ],
+            "Lib3": [
+                "SRR933991.fastq.gz"
+            ],
+            "Lib4": [
+                "SRR933990.fastq.gz"
+            ],
+            "Lib5": [
+                "SRR933989.fastq.gz"
+            ]
+        },
+        "cond_lib": {
+            "Wt": [
+                "Lib0",
+                "Lib1",
+                "Lib2"
+            ],
+            "Cond": [
+                "Lib3",
+                "Lib4",
+                "Lib5"
+            ]
+        }
+    }
+}

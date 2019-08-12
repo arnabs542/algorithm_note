@@ -1,7 +1,7 @@
 ﻿  
 Class 4 Tree(Binary Tree, Binary Search Tree)
 
-Binary Tree
+1.Binary Tree
 Definition: at most two children node.
 Binary Tree Example:
 
@@ -304,7 +304,7 @@ The recursion tree is:
 		/  |  |  \	    /  |  |  \	       /  |  |  \       ........
 
 
-if the original tree height is log2(n) then the recursion tree height is also log2(n)
+if the original tree height is log2(n)(Assume that they were balanced) then the recursion tree height is also log2(n)
 
 binary tree 1 2 4 8 16 32
 quadral tree 1 4 16 64 256 512
@@ -315,6 +315,130 @@ Time = O(4^(log_2(n))) = 2^(2log_2(n)) = 2^(log_2(n^2)) = n^2
 Space = O(log_2(n)) 依然是recursion tree 的高度
 
 1:58:18
+
+
+
+
+
+
+
+
+2. Binary Search Tree
+what is a bst?
+任意节点，左子树的值都小于该节点，右子树的值都大于该节点
+
+Q1：经典题目 How to determine a binary tree is a BST?
+
+primitive idea: for each node,
+	check all its left-subtree, check all its right-subtree.
+	
+
+Complexity?
+Time: O(n^2)
+			node(n)
+		left		  right      ===O(n)
+	    LL       LR       RL         RR     ===O(n)
+
+                    .............. 
+
+Worst case: O(n^2	)
+
+CODE:
+bool isBSTHelper(TreeNode.root = 10, int min, int max) {
+	if (root == null) return true;
+	if (root.value > min && root.value < max) {
+		return isBSHelper(root.left, min, root.value) &&
+		       isBSHelper(root.right, root.value, max);
+	} else {
+		return false;
+	}	
+}
+
+Q2. 经典例题 Print BST keys in the given range.
+Given two values k1 and k2 (where k1 < k2) and a root pointer to a Binary Search Tree. Print all the keys of tree of tree in range k1 to k2. i.e. print all x such that k1 <= x <= k2, and x is a key of given
+Print all the keys in an increaseing order!!!
+
+For BST, it's an in-order ordered tree. 
+
+solution 1:
+### not the best solution:
+### print all the binary tree point, and check whether it's in [k1, k2]
+
+My solution: 是否正确？？？
+Public void inOrder(TreeNode.root, int k1, int k2) {
+	if (root == null) {
+		return;
+	}
+	if (root.value < k1 || root.value >k2) {
+		return;
+	}
+	inOrder(root.left, k1, k2);
+	if (root.value >= k1 && root.value >= k2) {
+		system.out.print(root.value);
+	}
+	inOrder(root.right, k1, k2);
+}
+
+Solution:
+Public void inOrder(TreeNode.root, int k1, int k2) {
+	if (root == null) {
+		return;
+	}
+	if (root.value > k1) {
+		inOrder(root.left, k1, k2);
+	}
+	
+	if (root.value >= k1 && root.value >= k2) {
+		system.out.print(root.value);
+	}
+	if (root.value < k2) {
+		inOrder(root.right, k1, k2);
+	}
+	inOrder(root.right, k1, k2);
+}
+
+complexity(worst case 依然是O(n^2))
+
+
+
+
+答疑：
+1）
+base case wise???
+
+bool IsSys(TreeNode root) {
+	if (root = null) {
+
+	}
+}
+
+一定是root = null
+而不是root.left == null && root.right == null
+当输入为Null，non pointer to left or right
+以为会少一层，e.g.一个节点
+
+2）
+Q3. Let's assume if we tweak the leftchild with rightchild of an arbitary node in a binary tree, then the structure of the tree are not changed. Then how can we determine whether two binary trees' strutrues are identical?
+如果不balance，那么复杂度是多少呢？
+
+if the original tree height is log2(n)(Assume that they were balanced) then the recursion tree height is also log2(n)
+if not assume they were balanced?
+
+if balanced, time = 4^(log_2(n))
+--->
+if not balanced, time = 4^n ???
+
+no, why?
+
+极端情况下，虽然高度是n，但是分叉变少了，只有一个分叉了，因此复杂度降低了。
+
+02：56：16
+
+
+
+
+
+
 
 
 

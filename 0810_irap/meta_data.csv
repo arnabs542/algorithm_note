@@ -1,0 +1,7 @@
+LibraryName,LibraryLayout,fastq1,fastq2,condition,shortname
+wt1,paired,SRR933983.fastq.gz,SRR933986.fastq.gz,Wt,
+wt2,paired,SRR933984.fastq.gz,SRR933987.fastq.gz,Wt,
+wt3,paired,SRR933985.fastq.gz,SRR933988.fastq.gz,Wt,
+KSR-bFGF1,single,SRR933991.fastq.gz,,Cond,
+KSR-bFGF2,single,SRR933990.fastq.gz,,Cond,
+KSR-bFGF3,single,SRR933989.fastq.gz,,Cond,
