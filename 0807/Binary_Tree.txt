@@ -434,12 +434,86 @@ no, why?
 
 02：56：16
 
+Q4. isSymetric 
+O(n)
+因为是worst case
+
+    1
+   / \
+  2   3
+ / \  /\
+4  5  6 7
+
+Q5. 四叉树的复杂度分析
+
+time O(4^lob_2(n))
+space O(log_2(n))
+
+Q6: 这个解法是否正确呢？
+BST, FIND NODES IN [K1, K2]
+My solution: 是否正确？？？
+
+不成立
+比如      10
+         /  \
+        5   15             [16,17]
+       / \  / \
+      2  7 11 20
+             /  \
+            18  25
+           /
+          17
 
 
+Public void inOrder(TreeNode.root, int k1, int k2) {
+	if (root == null) {
+		return;
+	}
+	if (root.value < k1 || root.value >k2) {
+		return;
+	}
+	inOrder(root.left, k1, k2);
+	if (root.value >= k1 && root.value >= k2) {
+		system.out.print(root.value);
+	}
+	inOrder(root.right, k1, k2);
+}
+
+Q7:关于面试是否分析时间复杂度
+遇到难题，即使做过，也千万不要直接就给答案，而是要画recursion tree 一步一步分析
+
+Q8: isSymmetric 函数的外包的函数（补充）
+bool TreeIsSymmetric(TreeNode root){
+	if (root == null) return true;
+	return IsSymmetric(root.left, root.right);
+}
+
+boolean IsSymmetric (TreeNode one, TreeNode two) {
+	if (one == null && two == null) {
+		return true;
+	} else if (one == null || two == null) {
+		return false;
+	} else if (one.value != two.value) {
+		return false;
+	}
+	return (IsSymmetric(one.left, two.right) &&
+	        IsSymmetirc(one.right, two.left))   //case1   和上一题一样的对称情况
+                ||
+               (IsSymmetric(one.left, two.left) &&
+	        IsSymmetirc(one.right, two.right));   //case2   两棵树完全一样
+	}
+}
+
+Q9: 不管有多少if else，只要没有loop，都是O（1）
 
 
+Q10: 4：00：00 这个人的解法哪里不对
 
 
+Q11: 又讲了一遍merge sort
+4：06：11
 
+Q12：讲了一遍Q10究竟做了什么
+4：13：12
 
 
