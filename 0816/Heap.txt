@@ -22,6 +22,8 @@ example
 index 0 1 2 3 4 5
 value 1 3 2 5 4 7
 
+*** heap 在物理上是一个array，在逻辑上是一个有特殊性质的complete tree ***
+
 Heap: is an unsorted array but special rules to follow
 
 这个定义是对于min heap，max heap倒过来，堆顶值最大

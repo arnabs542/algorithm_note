@@ -1,1 +1,247 @@
 ﻿Graph
+search algorithm
+
+undirected graph
+
+01，02，03.png
+4.1 Adjacency Matrix
+所有有连接的为1（或者大小表示距离）
+所有没连接的为0
+
+4.2a Adjacency List
+每一个list是在图中的一条线
+
+4.2b use a hash table
+是list 的升级版，方便查找两个点是否连接
+
+图里面常用的graph search 算法
+high level
+search engine
+所有网页都是一个node，search engine会定时将所有的node的信息的链接(将某种顺序将所有网页过一遍)更新到自己的database 中，当用户需要时，进行分析。
+
+1. Breadth-First Search (BFS-1) 宽度优先
+
+		1
+	      /   \
+	    3        2
+          /   \    /   \
+        5      4  7
+      /   \
+     9    11
+
+expand(1) -> generate(3) and generate(2)
+expand a parent node and could generate 2 children nodes
+
+
+1 算法的objective是什么 （high level）
+2 high level的数据结构是什么 
+3 实现的时候，每一层在干什么 （operations）
+
+BFS1（bendth first search）
+1. objective
+第一次，先遍历图中可以一步到达的node
+第二次，遍历新的node可以一步到达的node （两步）
+…………
+
+2. 什么数据结构
+用一个queue实现
+因为先进先出
+
+3. 具体每一步的操作是什么呢？
+		1
+	      /   \
+	    3        2
+          /   \    /   \
+        5      4  7
+      /   \
+     9    11
+expand(1) -> generate(3) and generate(2)
+expand a parent node and could generate 2 children nodes
+
+                 queue = {}
+expand(1)        queue = {1}          remove 1 
+		 queue = {}           print 1
+generate(3,2)    queue = {3,2}
+expand(3)        queue = {3,2}        remove 3
+		 queue = {2}	      print 3
+generate(5,4)    queue = {2,5,4} 
+expand(2)        queue = {2,5,4}      remove 2
+		 queue = {5,4}        print 2
+generate(7)      queue = {5,4,7} 
+expand(5)        queue = {5,4,7}      remove 5
+		 queue = {4,7}        print 5
+generate(9,11)   queue = {4,7,9,11}
+expand(4)        queue = {4,7,9,11}   remove 4
+		 queue = {7,9,11}     print 4
+expand(7)        queue = {7,9,11}     remove 7
+		 queue = {9,11}       print 7
+expand(9)        queue = {9,11}       remove 9
+		 queue = {11}	      print 9
+expand(11)       queue = {11}         remove 11
+		 queue = {}           print 11
+当queue 为空时停止
+
+1           queue.size() = 1
+3 2	    queue.size() = 2
+5 4 7       queue.size() = 3
+9 11
+
+bfs1.png
+
+经典例题1：分行打印binary tree(分层，换行打印)
+
+经典例题2：Bipartite: 
+
+whether a graph's node can be divided into two group, 
+such that the nodes in each group do not have direct edges between the nodes that belong to the same group
+
+经典例题3 Determine wheter a binary tree is a complete binary tree
+
+		1
+	      /   \
+	    3        2
+          /   \    /   \
+        5      4  7
+      /   \
+     9    11
+
+solution: after detecting the first node that missed one child (only generate 0 or 1 node),
+then check whether all following nodes expanded to see whether they have any node generated.
+if any -> not balance
+
+Discussion:
+1. when should we consider to use BFS1 to solve a class of question?
+when we deal with the tree-related problem and 
+in the meantime we will need to address the ***relationship on the same level***
+2. BFS1 is not the right algorithm to find the shortest path in an arbitrary graph
+
+
+
+BFS2（best first search）
+经典算法 Dijkstra's Algorithm (runtime efficiency improvement: A* algorithm)
+dijkstra's_algo1 and 2.png
+1. usages: Find the shortest path cost from a single node(source node) to any other nodes in that graph
+(点到面（==所有点）的最短距离算法) 
+***所有点（只要有联通的）***
+2. Example problem：北京到中国所有其它主要城市的最短距离是多少
+3. Data structure priority_queue(MIN_HEAP)
+4. 解题思路
+	1.initial state(start node)（不好找起始点）
+	2.Node expansion/Generation rule
+	3.Termination condition: 所有点计算完毕才停止，也就是p_queue 变空
+	
+5. example: dijkstra's_algo3.png
+            dijkstra's_algo6.png 过一遍走这张图片的过程1.6~1.12
+	    property：7.png
+			强调了第三点和第五点
+
+
+
+
+
+例题 （？？？）
+Given a matrix of size N X N and for each row the elements are sorted in an ascending order,
+and for each column the elements are also sorted in an ascending order.
+How to find the K-th smallest element in it?
+
+M[n,n]
+1 2 3 4 5
+2 3 4 5 6 
+3 4 5 6 7
+4 5 6 7 8
+5 6 7 8 9
+
+BFS2
+1. initial state 
+M[0,0]是最小的
+2. node expansion/Generation rule:
+	a. Expand[0][0]:
+		i. generate[0][1]
+		ii. generate[1][0]
+	p_queue(2a,2b)
+
+
+3. termination contition
+when the k-th element is pooped out of the p_queue
+
+4. de-duplication (for example 3b)
+
+There are k iteratioins
+	for each iteration, we need to pop an element out of the p_queue for expansion, heap.pop()  
+	log(k)
+	generate at most two neighbors,
+	heap.insert(neighbor) 2log(k)
+
+Time = O(klog(k))
+Space = O(k)
+
+
+
+
+
+
+Questions:
+Q1:Bipartite: 
+一个node的孩子不能和它同组
+ex
+  2
+ /  \
+1 —— 3
+
+1 为第一组
+
+1 expands 2,3
+2，3为第二组
+
+2 expands 3
+但是2和3在同一组，所以错误
+
+Q2 关于heapify 记住复杂度为O（n），有时间可以写
+
+Q3 关于时间复杂度该告诉面试官worst 还是average
+一般都是worst case
+quick sort，quick partition 提到average case
+
+Q4 最后一题的复杂度
+M[n,n]
+1 2 3 4 5
+2 3 4 5 6 
+3 4 5 6 7
+4 5 6 7 8
+5 6 7 8 9
+
+1st iteration
+expand[0][0]     pq.pop([0][0]) log(k)
+generate[0][1]   pq.insert()    log(k)
+generate[1][0]   pq.insert()    log(k)
+                                =3log(k)
+
+每一轮时log(k)
+经过k轮，为klog(k)
+
+Q5 用queue 或者 p_queue 是否可以调用java 的 api
+可以，能调用就调用，做其他题目尽量不要自己写这种最基本的东西
+但是如果面试官要你写也要会写
+
+
+Q6 在d 算法的那道题中，要怎么更新Node(5，10) -> Node(5, 3)呢？
+   同理，最后一题呢，3b怎么不重样
+
+class GraphNode {
+	string name;
+	int value; // cost
+	int index_in_heap; /// get the number, could use for update
+}
+
+Q7  
+多个sulotion 题目，问清楚要优化什么worst or average complexity？
+或者自己主动提出这一步我要优化什么。
+
+
+
+
+
+
+
+
+
