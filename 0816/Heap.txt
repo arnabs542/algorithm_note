@@ -1,0 +1,229 @@
+﻿heap  堆 or priority queue 优先队列
+复习 什么是complete tree
+	 1
+      /     \
+    3        2	is not a complete tree
+   / \      / 
+ 5   null  7
+example
+	1
+      /   \
+     3     2
+    / \   / 
+   5   4 7
+
+
+	1
+      /   \
+     3     2	is a complete tree
+    / \   / 
+   5   4 7
+
+index 0 1 2 3 4 5
+value 1 3 2 5 4 7
+
+Heap: is an unsorted array but special rules to follow
+
+这个定义是对于min heap，max heap倒过来，堆顶值最大
+性质：堆的实现通过构造二叉堆（binary heap），在这种数据结构具有以下的性质
+1，任意节点小于塔的所有孩子，最小元素在堆的跟上
+2，堆总是一棵完全树，complete tree
+   // 逻辑上是一棵complete tree，但物理上是一个线性的array
+3，将根节点最大的堆叫做max heap，根节点最小的堆叫做最小堆min heap
+4，index of leftChild = index of parent * 2 + 1
+5，index of rightChild = index of parent * 2 + 2
+// 四五两条特性，决定逻辑上是一个complete tree
+6，unsorted but follow rules above
+
+支持的基本操作
+1，insert：向堆中插入一个新元素：时间复杂度O(log(n)) 因为是complete tree
+ex: add 6 to
+   	1
+      /   \
+     3     2	
+    / \   / \
+   5   4 7   
+
+   	1
+      /   \
+     3     2	
+    / \   / \
+   5   4 7   -1
+
+   	1
+      /   \
+     3     -1	
+    / \   / \
+   5   4 7   2
+
+   	-1
+      /   \
+     3     1	
+    / \   / \
+   5   4 7   2
+
+将新元素放到最后一个位置，向父母节点percolate（交换 or swap）
+
+2，update：将一个元素改变值：时间复杂度：O(log(n))
+根据实际情况向上或向下percolate
+如果向上，则直接percolate，如果向下，则与下方较小的孩子percolate
+
+ex: change 3 to 8 in
+   	1
+      /   \
+     3     2	
+    / \   / \
+   5   4 7   
+
+   	1
+      /   \
+     8     2	
+    / \   / \
+   5   4 7   
+
+   	1
+      /   \
+     4     2	
+    / \   / \
+   5   8 7  
+
+3，get/top：获取当前堆顶元素的值 时间复杂度O(1)
+
+4，pop：删除对顶的元素
+不可以从子层选择较小的移动，因为可能会出现，时间复杂度O(log(n))
+   	1
+      /    \
+    3       2	
+   / \     / \
+  5  null 7  
+
+   	1
+      /   \
+     3     2	
+    / \   / \
+   5   4 7  
+
+将最后一个元素移到堆顶，在当作insert处理
+   	 7
+      /     \
+     3       2	
+    / \     / \
+   5   4  null  
+
+5，heapify：使得一个unsorted array变为一个堆。时间复杂度O(n)
+??? 怎么heapify
+
+经典考题
+
+Q1 find smallest k elements from an unsorted array of size n.
+***首先要问的是assumption是什么，k和n大小的关系***
+***问题越短的越要问清楚assumption***
+
+How to make assumptions？
+	1，what is the relationship between k and n ???
+
+solution1
+	quick sort or merge sort
+
+solution2
+	step1 How to build a min-heap -> heapify it O(n)
+	step2 Keep pooping out k elements -> O(klogn)
+	total time = O(n + klogn)
+
+solution3
+	step1 use a max-heap?
+	xxxxxxx   X xxxxxxxxxxxxxxxxxxxxxxxxxx......
+	max-heap(7) with first 7 elements
+	O(k)	
+
+	step2 iterate from the (k+1) ~ the n-th element, and for the current X element
+		case1 if X < max-heap.top(), 
+		then delete top and  max-heap.insert(X) (or update the top?); 
+		O(log(k))
+	
+		case2 else, do nothing
+	
+	total = O(k) + O((n - k)log(k))
+
+compare solution2 and solution3
+
+                  solution2     solution3
+case1 k <<< n       O(n)        O(n (log(k)))
+
+heapify实际上的复杂度:  O(constance * n)
+
+Conclusion: it depends,
+
+case2 k and n 同数量级
+Conclusion: it depends,
+
+                   O(nlog(n))        k ~ 0.5n (worst case) O(nlog(n))
+
+***面试中遇到复杂的时间复杂度分析，列出各个步骤，分析各种情况，现场和面试官一起分析			       
+
+Finally, we can see that solution2 and solution3 can be comparable, 
+but it is hard to say which one is better (depending on the value of k and n)    
+
+solution4 
+quick partition
+比如找300个最小
+找一个pivot（相加之后求平均）
+比pivot小的放到左边，否则放到右边
+
+1.找300个最小，每次舍弃右边
+     1000                   776
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                      P1
+  416        584 
+xxxxxxxxxxxxxxxxxxxxxxxx
+	P2
+
+2.如果左边没有300个了,则保存左侧，并丢掉左侧，继续partition
+7   409
+xxxxxxxxx
+ P3
+
+则找300 - 7 = 293 个，同时存储最小的7个值
+ 100  309  
+ xxxxxxxx
+    P4
+
+找293-100 = 193 个，同时存储那100个最小值
+    276 33
+    xxxxx
+       P5
+舍弃右侧33个，继续找193个
+   187  89
+    xxxx
+       P6
+因为左侧没有193个，保存这187个元素，并舍弃左侧，在右侧继续partition
+这时寻找最后193-187 = 6 个元素
+ 
+       x
+	P7
+以此类推
+QUICK PARTITION
+complexity：
+worst case: O(n^2)
+Average case: O(n) n + n/2 + n/4 + n/8...
+最坏情况比2，3差，但平均情况好于2，3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,9 @@ yliu6680
 1edd775af270777782f06bec20e02424
 
 
-email:
-testemail
-12345
+
+06210445cbm@gmail.com
+
+upload chunks and running qc at same time
+fix environemnt
+add result page to show all qc, alignment, de result
