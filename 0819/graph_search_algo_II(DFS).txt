@@ -1,0 +1,387 @@
+Graph Search Algorithms II (DFS)
+
+上一节课两个BFS 宽度 优先度 优先
+Breath First Search(FIFO queue)
+Best First Search (priority queue)
+
+Depth First Search (DFS):
+
+Back-tracking is just a behavior of DFS
+
+# recall using pre order to traverse a tree
+# 实现方法：easy to use recursion
+# 常见考题：
+	#  1 print all subset of a set
+	   为什么 BFS1 不能用，因为使用的queue会使用2^n空间，可能会出现空间问题
+	#  2 print all valid permutaions of () () ()
+	#  3 combination （组合问题） e.g. 凑硬币金额99 cents
+	   有1分，5分。10分，25分的coin。给定一个钱数99cent，有多少种组成方式，并打出所有的可能组合
+	#  DFS 一类的题目
+	DFS类型问题.png
+
+
+RECALL the pre-order traverse the binary tree code
+		 10
+	      /      \
+            5          15
+	  /   \       /   \
+        2       7    12    20
+      /   \    / \
+    null null
+
+首先 是recursion
+其次 多次而不止一次调用自己
+
+
+
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try
+
+
+
+
+经典例题：
+
+题目1. print all subset of a set S={'a','b','c'}
+穷举所有可能性
+
+sub-set1: emtpy
+sub-set2: a
+sub-set3: b...
+
+从数学的角度去分析问题
+
+a * b * c
+0   0   0	empty
+1   1   1	a,b,c
+
+图片(recursion tree)
+ practice1.jpg
+
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义？
+each level, it makes the decision on whetehr to put this element into the final set or not. n elements->n layers
+每一层代表是否取a,b,c；左边的代表取了，右边代表没取
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try？
+two, each case considers either select or not
+2个情况需要try，每一层只需要考虑是否加入abc，不需要考虑别的层的情况
+
+代码实现
+
+讲代码
+i.先讲参数，
+input: the set
+index （layer）: the bumber of the layer
+solution: the current result(在直上直下过程中，subset的情况)
+
+ii.high level -> detail
+high level: it's a recursion solution, and it's a binary tree, it called itself twice
+detail:
+base case:
+recursive rules:
+
+void FindSubSet(const strings input, int index /*or layer*/, string solution)
+	if (solution.size() == 0) {
+		cout << "empty set" << endl;
+	} else {
+		cout << solution << endl;
+	}
+	return;
+	
+	// 树有几个岔，就有几个recursion rule 的 case
+	// case1
+	solution.push_back(input.at(index));  //add 'a'
+	FindSubSet(input, index + 1, solution);  //breaking point
+	solution.pop_back();  //返回上一个状态，因为string solution 一直共用同一个address，是reference
+			      //所以如果修改了recursion中传递的变量，一定要将传递的变量修改回上一个状态。修改必须成对出现
+
+	// case2
+	FindSubSet(input, index + 1, solution)
+
+
+
+经典例题2：
+practice2.png
+()()() find all valid permutaion using the parenthesis provided
+
+((()))	1
+(())()	1
+
+
+())(()  0
+
+怎么归纳到数学上呢？
+
+position 0 1 2 3 4 5
+         x x x x x x 
+
+	 (	0
+	 )	1
+
+但是加两个括号都是有限制的，相当于要对一个binary tree 进行剪枝
+restriction:
+1. when could we place a left parenthesis '('?
+	a.if only there are still '(' left
+
+2. when could we place a right parenthesis ')'?
+	a.if only the '(' added so far.
+	  前面几层中，左括号数量要大于右括号 
+
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义
+6 level, each level represents a position in which we could place a either '(' or ')'
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try
+最多two, 但可能会剪枝
+
+画recrusion tree，practice2.png
+
+代码实现
+n: total number of pair of '()' need to add. So toal levels == 2*n
+l: stores the number of '(' added so far
+r: stores the number of ')' added so far
+solu_prefix: solution so far
+
+void DFS(int n, int l, int r, string& solu_prefix){
+	if (l == n && r == n){ // or only left: if (r == n){}
+		cout << solu_prefix << endl;
+		return;
+	}
+	
+	// case1: add '(' on this level
+	if (l < n) {
+		solu_prefix.push_back('(');
+		DFS(n, l + 1, r, solu_prefix);
+		solu_prefix.pop_back();
+	}
+
+	// case2: add ')' on this level
+	if (r < l) {
+		solu_prefix.push_back(')');
+		DFS(n, l, r+1, solu_prefix);
+		solu_prefix.pop_back();
+	}
+}
+
+
+
+经典例题3 print all combivations of coins that can sum up to a total value k
+e.g. total value k = 99 cents
+coin value = 25 10 5 1 cent
+
+Solution 1:
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义
+99 level at most, if takes all 1 coin
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try
+four brunches (25, 10, 5, 1)
+
+			      root (99 cents)
+    		      /        /         \        \
+level1               74      89          94        98     
+                  / / \ \
+	        49 64 .....
+pros: eady to think
+cons1: if k value is not too small, then the call stack will overflow
+cons2: Time=O(4^99) will increase very quickly
+
+Solution2
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义
+4 level, represent 4 types of coins
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try
+dynamicaly changing values (k-nary tree)
+
+			                 	99 cents
+	                    /               /           \               \              
+level0 25               0, 25             1, 25        2, 25            3,25
+                 / / / / / \ \ \ \ \
+level1 10       0,10; 1,10; ... 9,10
+
+level2 5
+
+level3 1
+ 
+Pro 1 even if k calue is not too small, no callstack over-flow
+
+Pro 2 Time = O(99^4) 因为每层最多99叉，一共四层，所以99^4
+
+
+代码：
+solu[4] = {};
+static int coin[4] = {25, 10, 5, 1};
+
+void FindCombination(int money_left = 99, int level, int sol[]) {
+	// base
+	if (level == 3){
+		sol[level] = money_left;
+		
+	}
+	
+	// money value on  this level == coin[level]
+	for(int i = 0; i <= money_left/coin[level]) {
+		sol[level] = i;
+		Findcombination(money_left - i * coin[level], level + 1, sol[]);
+		// why not we recover the parent's state?????
+		// 因为直接覆盖， term 不是 containerly??
+	}
+
+}
+	
+*** k 岔树的recursion 写法，使用for loop，将函数套在里面就可以了 ***
+
+
+例题1->3
+最简单的DFS -> 需要条件判断的DFS -> 多(不定数目)岔树的DFS
+
+经典例题4
+1:41:10
+Given a string with no duplicated letters. how to print out all permutations of the string.
+
+a b c
+
+e.g.
+a b c 
+b a c 
+c a b
+
+			root abc
+                 /           |            \
+level0        a(bc)         b(ac)        c(ab)
+            /     \          
+level1     b(c)    c(b)
+            |       |
+level2      c       b
+
+DFS基本方法：
+1. what does it store on each level
+每层代表什么意义
+three levels, represents the length of the string
+
+2. How many different states should we try to put on this level
+每层有多少个状态需要try
+remained not used letters
+
+Time = O(n!)
+
+solution1:
+
+void Permutation(string& input, 
+		 string& answer, 
+		 int level,
+		 vector<bool>& used) 
+{
+	if (level == input.size()) {
+		cout << answer << endl;
+		return;
+	}
+	for (int i = 0; i < length; i++){
+		if(used[i] == false){
+			answer += input[i];
+			used[i] = true;
+			Permutation(input, answer, used, level+1);
+			used[i] = false;
+			answer.erase(answer.begin() + answer.size());
+		}
+	}
+}
+
+solution2 (swap-swap):
+
+			root abc
+                 /           |            \
+level0        a(bc)         b(ac)        c(ab)
+            /     \          
+level1     b(c)    c(b)
+            |       |
+level2      c       b
+
+inplace-way 不需要额外的内存
+只用将原来string的字母位置移动，得到结果
+
+			root abc
+                 /           |            \
+level0        a(bc)         b(ac)        c(ab)
+
+将abc，每次将最左侧和最右侧swap，加上本身。得到 abc bac cba
+
+            /     \  
+level1     b(c)    c(b)
+	  a|(bc)    a|(cb)
+将余下的，继续最左侧与最右侧swap
+// index is the current layer that we trying
+void permutation(string& input, int index = 0) {
+	if (index == input.size()) {
+		cout << input << endl;
+		return;
+	}
+	
+	// put each letter in the index-th position of the input str
+	for (int i = index; i < input.size(); i++) {
+		swap(input, index, i);  // 将最左最右交换
+		permutation(input, index + 1);
+		swap(input, index, i);  // 将交换过的string再交换回来，复原
+	}
+}
+
+conclusion: when should we use swap-swap in dfs?
+
+whenever every single permutaion contains all elements in the initial input, and their *only difference* is their *order*
+then you should consider SWAP and SWAP
+
+当列举的情况中，所有的起始状态的元素都要出现，并且*顺序*是*唯一限制条件*的时候，考虑swap swap
+
+
+
+Disscussion
+1. DFS can only be implemented by using recursion way?
+No, it can be implemented by using either iterative way(explicityly maintain a stack), or in a recursive way
+but easier to write code
+
+2. 四道例题对应四种dfs的方法类型
+
+
+QA:
+1. dfs -> Time complexity O(n^2) -> wrong
+***
+Permutation questions, their time complexity must be exponential
+O(2^n) O(n!)...
+
+2. 
+不同语言的特性，可以向面试官请求不同的assumption，比如java 不用string&, 而是char []
+
+3. 最后一题的复杂度为什么是O(n!)
+trick:  if it is a binary tree, then the leaf node > all the other level's sum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
