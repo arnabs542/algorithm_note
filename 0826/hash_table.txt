@@ -1,0 +1,131 @@
+第八讲
+
+hash table
+- hash set is a set {1,3}, it only contains keys（只有键）
+	e.g. find a line that can cross the most number of points in 2D space.
+	y = ax + b
+- hash map is a <key, value> pair
+
+Hash table
+1. hash map
+2. principle <key = string/int/obj......, value = obj, string, int.....>
+e,g, <string, int>
+
+<tom, counter ++= 2>
+<john, counter ++= 1>
+
+O(1) time complexity to find the value of a key
+not an array
+
+wiki 
+图片显示 hash table 的结构，以及average和worst的complexity
+
+图片显示 hash collision(和两种解决方式)
+hash function得到的结果是一样的
+	separate chaining
+		当冲突时将同一个hash function的结果对应多个value，values之间为一个linkedlist
+	
+	open addressing
+		当冲突时，寻找下一个或者下面多个位置之后，直到找到空的address
+		linear probing(1 interval)
+		quadratic probing(multiple interval)
+		double hashing(interval 为第二次hash function的结果)
+
+Q1 for a composition with different kinds of words, try to find the top k frequent words from the composition
+   一篇文章中出现最多的k个词
+
+Assumptions：
+
+solution
+step1: iterate over all the composition, and count the frequency of each word by using a hashtable with <key = string, value = int(counter)>
+       用hashtable首先要讲清楚key和value是什么，要怎么用
+
+step2: M1: use a max_heap with size n, and then keep popping k times.
+       M2: use a min_heap with size k,......()
+       see lecture 5 heap
+
+
+
+
+Q2: if there is only one missing number from 1 to n in an unsorted array, How to find it in O(n) time? size of the array is n-1.
+
+Solution 1: math
+step1: sum over all numbers in the array -> sum1
+step2: the number that is missing = n(n+1)/2 - sum1
+
+Time = O(n)
+Space = O(1)
+
+The downsides of this method is oerflow, why?
+Because if n is too large.
+
+***有除号的情况下，注意是否影响精度*** 因为n(n+1) 必定为偶数，所以这一题不会有这个问题
+
+*** follow up: for mathematical computation, when we are facing /, what should we worry about???
+	1. precision of integer
+	2. denominator = 0
+
+Solution2: hash set
+step1: use a hasSet to store all elements
+step2: iterate over all element from 1 to n and check against the hash_set
+
+time = O(n)
+space = O(n)
+
+solution 3: XOR bit operation:
+
+	0111
+XOR	1000
+--------------
+	
+1 2 3 4 x 6 7 -> result1
+1 2 3 4 5 6 7 -> result2
+
+result1 XOR result2 = 5 
+
+step1: XOR all elements in the array -> result1
+step2: start with result1 xor 1 xor 2 xor 3 xor 4 xor 5 -> missing number
+
+Q3 Find the common numbers between two sorted arrays a[N], N, M
+follow up:			   k
+
+solution:
+M1: binary search
+	step1: for each element X in the shorter array, we run a binary search in the longer array
+	Time: O(m * log(n))    if m << n
+	if n --> infinite (2^64)
+	and it's only could be 64*m
+	Space: O(1)
+
+M2 hash_table 
+step1: hash table to store all elements from the shorter array, because we want to optimize the space consumption
+step2: for each element in the longer array, we check it against the hash table
+Time = O(m + n)
+space = O(min(m,n))
+
+if n is very big, M1 is better!
+ 
+M3 谁小移谁?
+time = O(m + n)
+space = O(1)
+
+follow up k arrays? which method is best
+
+***读wiki的hash table***
+***要注意题目的assumption，有的题很想，但是assumption不同***
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

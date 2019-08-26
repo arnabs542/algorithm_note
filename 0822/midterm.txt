@@ -1,0 +1,61 @@
+﻿1. reverse linked list
+
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        if head == None or head.next == None:
+            return head
+        
+        p = self.reverseList(head.next)
+        head.next.next = head
+        head.next = None
+        return p
+
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        if head == None or head.next == None:
+            return head
+        
+        prev = None
+        curr = head
+        while curr != None:
+            temp = curr.next
+            curr.next = prev
+            prev = curr
+            curr = temp
+        return prev
+
+想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图
+想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图
+想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图
+想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图
+想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图想不出来画图
+
+2. isbst
+		
+ass: data is int type
+
+ass: no duplicate
+
+the min and max 是无穷大和无穷小
+
+3. DFS 经典例题4
+
+abc
+
+2 swaps
+		            abc
+         a(bc)              b(ac)              c(ab)
+      ab(c)  ac(b)       b(ac)   b(ca)        c(ab)  c(ba)    
+      ab(c)  ac(b)       b(ac)   b(ca)        c(ab)  c(ba)    
+
+		            abc
+	a(bc)
+
+
+
+	    
+
+	   	    
+
+
+

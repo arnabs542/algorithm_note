@@ -318,7 +318,7 @@ inplace-way 不需要额外的内存
                  /           |            \
 level0        a(bc)         b(ac)        c(ab)
 
-将abc，每次将最左侧和最右侧swap，加上本身。得到 abc bac cba
+将abc，每次将最左侧和最右侧swap，加上本身。得到 abc bac cab
 
             /     \  
 level1     b(c)    c(b)
@@ -374,9 +374,40 @@ trick:  if it is a binary tree, then the leaf node > all the other level's sum
 
 
 
-
-
-
+class Solution:
+    def sortArray(self, nums: List[int]) -> List[int]:
+        return self.quickSort(nums)
+        
+    def quickSort(self, nums):
+        if nums == None:
+            return None
+        if len(nums) == 1 or len(nums) == 0:
+            return nums
+        self.quickSortHelper(nums, 0, len(nums)-1)
+        return nums
+        
+    def quickSortHelper(self, nums, left, right):
+        if left >= right:
+            return
+        
+        pivot = int((left + right) / 2)
+        
+        while left < right:
+            while left < right and nums[left] < nums[pivot]:
+                left += 1
+            while left < right and nums[right] >= nums[pivot]:
+                right -= 1
+            self.swap(nums, left, right)
+            
+                
+        self.quickSortHelper(nums, 0, pivot - 1)
+        self.quickSortHelper(nums, pivot + 1, len(nums) - 1)
+    
+    def swap(self, nums, left, right):
+        temp = nums[left]
+        nums[left] = nums[right]
+        nums[right] = nums[left]
+        return nums
 
 
 

@@ -1,0 +1,7 @@
+第八讲
+
+String 1
+
+关于JAVA STRING 数据结构的特殊性，java string里的char是imutable的。
+
+1:07:56
