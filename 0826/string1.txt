@@ -5,3 +5,441 @@ String 1
 关于JAVA STRING 数据结构的特殊性，java string里的char是imutable的。
 
 1:07:56
+
+5类常考问题（和array的有些类似，往往需要2个指针来完成操作）
+1. removal
+	1.1 remove some particulr chars from a string.
+	1.2 remove all leading/trailing/duplicated empty space from a string
+2. de-duplication aaabbb_ccc->ab_c
+3. string replacement, replace empty space "" with "20%"
+4. reversal (swap) e.g. I love yahoo -> yahoo love I
+5. Substring -> strstr
+	5.1 regular method
+	5.2 robin-carp (hash based string matching) & KMP(KNUTH-MORRIS-PRATT) 
+
+Advanced operations(在stringII中会讲到)
+1. move letters around e.g. ABCD1234 -> A1B2C3D4
+2. Permutation(use DFS)
+3.Decoding/encodgin aaaabcc -> a4b1c2
+4.Longest substring that contains only unique chars
+5. Matching(*.?)
+6. etc.
+
+Popular representations of characters:
+1. ASCII representation of a letter: A==65 a==97
+For example, in c++
+char x = 'A'
+printf("%d", x) // print 65
+
+ASCII 前128个包括了英文的字母和符号
+      后128个包括了一些其它国家的语言的字母
+
+
+2.Unicode: the latest version of Unicode contains a repertoire of more than 110,000 characters covering 100 scripts and various symbols.
+相对复杂（面试时假设都使用ASCII code）
+
+第一类
+1. Char Removal
+Q.1 remove a/some particular chars from a string
+Ex. string input = "student", remove "u and n" -> output "stdet"
+
+错误代码
+void RemoeChar(string& input) {
+	for (int i = 0; i < input.size(); i++) {
+		if (input.at(i) == 'u' || input.at(i) == 'n') {
+			input.erase(input.begin() + i);
+		}
+	}
+}
+
+易错点：
+1. string删除后后，所有后续的char都移动了，所以会导致i指针的位置不正确
+2. 在for loop中连续调用api需要考虑这个api的复杂度，earase的复杂度为O（n），导致答案的效率很差，time=O(n^2)
+
+正确解法
+EXAMPLE:
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+           i
+	   j
+
+两个挡板 三个区域 同向而行
+
+i: slow pointer, all letters that not u or n (results to return) should be put to the left handside of i;
+
+j: fast pointer, is the current index to move, all letters in [i,j] are area that we don't want, all the area on j's right is the unknown char.
+
+(j, size-1] unknonwn area
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+              i
+	      j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+                 i
+	         j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+                    i
+	            j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+                    i
+	               j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+                    i
+             	          j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  u  u  n  t
+                    i
+             	             j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  t  u  n  t
+                    i
+             	             j
+
+index      0  1  2  3  4  5  6 
+string [7] s  t  d  t  u  n  t
+                       i
+             	             j
+
+string RemoveChar(string& input) {
+	if(!input.size()) return input;
+	int i = 0;
+	int j = 0;
+	while (j < input.size()) {
+		if(input[j] == 'u' || input[j] == 'n') ++j;
+		else input[i++] = input[j++];
+	}
+	input.resize(i); //resize the original string to a new size [0..., i - 1]
+	return input;
+}
+
+time = O(n)
+space = O(1)
+
+
+
+Q1.2 remove all leading/trailing and duplicate empty spaces (only leave one empty space space if duplicated spaces happen) from the input string.
+e.x.
+input = "___abc__ed__ef__";
+          3    2   2   2
+
+依然是
+两个挡板 三个区域 同向而行
+
+i: slow pointer, all letters to the left-hand side of i(not including i) are all processed letters that should not be removed(slow);
+
+j: fast pointer, j is the current index to move(fast), all letters in [i,j] are all area that we don't want (empty spaces xxxxx), all the area on j's right is the unknown char.
+
+(j, size-1] unknonwn area
+
+input = "___abc__ed__ef__";
+         i(slow) ->
+	       j(fast) ->
+
+Example (W1)(_W2)(_W3)(_Wn)
+只有第一个单词前面没有空格，后面所有单词前面都要加一个空格
+For each char in the original string
+1. skipping all leading/duplicate empty space
+2. Add only one empty space in front of each word (except the 1st word in the sentence)
+
+void RemoveSpaces(string &s) {
+	while(fast < s.size() && s[fast] == " ") {
+		fast++; // skip all leading '' in front of any word
+	}
+	if (fast == s.size()) {
+		break;
+	}
+	if (word_count > 0) {
+		s[slow++] = '' // add ' ' in front of (2nd +) word
+	}
+	while (fast < s.size() && s[fast] != ' ') {
+		s[slow++] = s[fast++];
+	}
+	word_count++;
+}
+
+
+
+第二类
+2. Char De-duplication
+Q2.1 Remove duplicated and adjacent letters (leave only one letter in each duplicated section) in a string.
+
+e.g.
+index    0  1  2  3  4  5  6  7
+string   a  a  b  b  _  _  c  c
+            s->
+	    f->
+
+f 和 s-1 比较
+
+f is the fast/current index to scan the string (from left to right)
+s is the slow/index all letters to the left of s (including s) should be in the final answer
+
+index    0  1  2  3  4  5  6  7
+string   a  a  b  b  _  _  c  c
+            s->
+	       f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  b  b  _  _  c  c
+               s->
+	          f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  b  b  _  _  c  c
+               s->
+	             f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  _  b  _  _  c  c
+                  s->
+	                f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  _  b  _  _  c  c
+                  s->
+	                   f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  _  c  _  _  c  c
+                     s->
+	                      f->
+
+index    0  1  2  3  4  5  6  7
+string   a  b  _  c  _  _  c  c
+                     s->
+	                         f->
+
+void removeDuplicate(string& str) {
+	if (str.length < 2) {
+		return;
+	}
+	int f = 1, s = 0;
+	while (f < str.length) {
+		if (str[s] != str[f]) {
+			str[++s] = str[f++];
+		} else {
+			f++;
+		}
+	}
+	str.resize(s + 1);
+}
+
+
+
+Q2.2 (Char de-duplication adjacent letters repeatedly)
+e.x. abbbbz->aaz ->z
+     
+     
+method1: explicitly maintain a stack
+
+	a1 b b b b a2 z w
+	p->
+	||
+
+	a1 b b b b a2 z w (与栈顶元素不同，添加入栈)
+	   p->
+        ||a1
+
+	a1 b b b b a2 z w (与栈顶元素不同，添加入栈)
+	     p->
+        ||a1 b
+
+	a1 b b b b a2 z w (过掉所有b，直到遇到下一个与栈顶不一样的元素)
+	           p->
+        ||a1 b
+
+	a1 b b b b a2 z w (去掉栈顶元素b)
+	           p->
+        ||a1 
+
+	a1 b b b b a2 z w (过掉所有a，直到遇到下一个与栈顶不同的元素)
+	              p->
+        ||a1
+
+	a1 b b b b a2 z w (去掉栈顶元素a1)
+	              p->
+        ||
+
+	a1 b b b b a2 z w (与栈顶元素不同，添加入栈)
+	              p->
+        || z
+
+	a1 b b b b a2 z w (与栈顶元素不同，添加入栈)
+	                p->
+        || z w
+
+为什么用vector而不是stack，因为得到结果的时候，更加简单
+
+void removeDuplicate(string& s) {
+	if (s.length() <= 1) 
+		return;
+	vector<char> st;
+	int i = 0;
+	while (i < s.size()) { // i is the fast index
+		char c = s[i];
+		if (st.size() > 0 && s[i] == st.back()) { // st.size() > 0 !!! 一定要写的条件判断
+			while (i < s.size() && c == s[i]) { // 过掉所有的相同元素
+				i++;
+			}
+			st.pop_back(); // 弹出栈顶元素
+		} else {
+			st.push_back(s[i]); // 否则压栈
+			i++;
+		}
+	}
+	s.clear();
+	for (int j = 0; j < st.size(); j++) {
+		s += st[j];
+	} // time of the whole for loop is O(n)
+}
+
+Method2: implicitly maintain a stack
+
+	a1 b b b b a2 z w
+	s->
+	   f->
+
+	a1 b b b b a2 z w （f和s不同所以都向后，可以看到，s和其左侧相当于是栈中的元素，s向右移动相当于压栈）
+	   s->
+	     f->
+
+	a1 b b b b a2 z w （f和s相同，过掉所有b）
+	   s->
+	     f->
+
+	a1 b b b b a2 z w （f和s相同，过掉所有b，直到遇到下一个与栈顶不一样的元素）
+	   s->
+	           f->
+
+	a1 b b b b a2 z w （s--，相当于去掉栈顶元素）
+	s->
+	           f->
+
+	a1 b b b b a2 z w （f和s相同，过掉所有a，直到遇到下一个与栈顶不一样的元素）
+	s->
+	              f->
+
+	a1 b b b b a2 z w （s--，相当于去掉栈顶元素，s为-1，相当于空栈）
+      s->
+	              f->
+
+	a1 b b b b a2 z w （s--，相当于去掉栈顶元素，s为-1，相当于空栈）
+      s->
+	              f->
+
+	z b b b b a2 z w （改写a1为z，因为z没有出现在“栈顶”）
+        s->
+	                f->
+
+	z w b b b a2 z w （改写b为w，因为w没有出现在“栈顶”）
+          s->
+	                f->
+	返回s及其左侧的char
+
+s: slow pointer is actually pointing to the top element of the "stack"!
+
+*** 物理意义依然不变，依然是两档板，三区域 ***
+Time = O(n)
+space = O(1)
+
+
+
+
+第三类
+3. Sub-string Finding
+Q3 (Strstr), Substring problem: how to determine whether a string is a substring of another string.
+Return the first index of the substring
+Example:
+
+s1 = "a b c d e"; s2 = "c d"
+
+return 2; 
+
+return -1 if s2 is not in s1
+
+index 0 1 2 3 4
+s1    a b c d e
+s2    c d
+
+Error code:
+int strmatch(String s1, String s2) {
+	if(s1 == null || s2 == null) {
+		return -1;
+	}
+	int i,j;
+	for (i = 0; i <= s1.length() - s2.length(); i++) { // every ***possible*** start index in s1
+		for (j = 0; j < s2.length(); j++) {
+			if(s1.charAt(i + j) != s2.charAt(j)) {
+				break;
+			}
+		}
+		if (j == s2.length){
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+for (i = 0; i <= s1.length() - s2.length(); i++) { // every ***possible*** start index in s1
+***是否需要取到等于的问题，一个letter（一个数字）debug ***
+
+M2:
+Rabin-Karp (只需要理解，不需要写code)
+
+02:16:22
+
+hash s2 and hash the same length in s1
+
+s1 = "a b c d e"; s2 = "c d" = 106
+      a b = 87
+        b c = 99
+          c d = 106
+            d e = 101
+
+核心问题：
+1 寻找一个hash function可以使得每一个字母的组合都是独一无二的
+2 随着窗口的移动，每次recalculation 只需要 O（1）的复杂度
+
+1. 使用26进制
+a b
+1 * 26^1 + 2 * 26^0
+  b c
+  2 * 26^1 + 3 * 26^0
+
+2. 每次recalculate只需要分三步
+每次滑动
+删掉最左侧（上一次的calculation结果）的数值，中间数值乘以26（不管中间有多少个数值），加上最右边的数值（新滑动到的数值）
+
+思考 是否会overflow
+
+
+Q & A
+
+hash map 里面第一个找k most frequent word，在bigdata的背景下
+
+bigdata1.jpg
+bigdata2.jpg
+
+最后做k array merge, find global max or min
+
+
+
+
+
+
+
+
+
+
