@@ -1,0 +1,115 @@
+leetcode
+continue binary search
+linked list
+
+         h
+ 1<2<3<4<5>None
+           c
+           t
+
+reverse linked list recursive tree
+
+	        h
+	1     	1 2>3>4>5>n
+		  t	
+		  h
+	2	1 2 3>4>5>n
+		    t	
+		    h	
+	3	1 2 3 4>5>n
+ 		      t
+		      h	
+	4	1 2 3 4 5>n
+ 		        t
+			h
+	5	1 2 3 4 5>n     base case
+
+------------------------------------
+			h
+	5	1 2 3 4 5>n 
+		      h	nt
+	4	1 2 3 4 5>n
+ 		        t
+
+# 92    【1，5】 2，5 demo
+	pointer 的情况
+        # ---   -----    -----   =>  --- ----- -----
+        #   1   2   3    4             1 3   2 4
+        #   ------- ------
+        # 1 2     3 4
+        #----- -------
+        #    1 2     3 4
+
+4个pointer
+1：no1node    1
+2: startNode  s
+3: prev       p
+4: no4node    4
+
+position = 1
+	h
+	1>2>3>4>5
+	c
+      p 
+
+进入loop
+
+position = 1
+	h
+	1>2>3>4>5
+	  c
+        p 
+	  4
+
+position ++
+
+position = 2
+	h
+	1>2>3>4>5
+	    c
+          p 
+	    4
+	1 s
+
+position ++
+
+position = 3
+	h                       1<2<3>4>5
+	1>2<3 4>5
+	      c
+            p 
+	      4
+	1 s
+position ++
+
+position = 4
+	h
+	1>2<3<4 5
+	        c           
+              p                   
+	        4
+	1 s
+position++
+
+position = 5
+	h
+	1>2<3<4<5
+	          c           
+                p                   
+	          4
+	1 s
+postion++
+
+out of loop
+
+
+1--->p
+s--->4
+
+
+
+
+
+
+
+
