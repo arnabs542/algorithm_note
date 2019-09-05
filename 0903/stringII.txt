@@ -1,0 +1,631 @@
+string II
+
+Class 9 String2
+
+4. string reversal
+Q4 string reversal
+(4.1) apple -> elppa use iteration
+
+iteration
+
+two pointer and swap
+
+ apple
+ i> <j
+ 
+
+(4.2) apple -> elppa use recursion
+
+void reverse(string &input, int left, int right) {
+	if (left >= right){
+		return;
+	}
+	swap(string, left, right);
+	reverse(string, left + 1, right - 1);
+}
+
+(4.3) I love yahoo -> yahoo love I 
+solution1:
+stack || I love yahoo -> yahoo love I
+but use O(n) space
+
+solution2:
+step1: reverse search sentence
+oohay evol I
+
+step2: reverse each word
+yahoo love I
+
+step1 和 step2 可以互换
+
+(4.4) 
+abcdef -> efabcd shift the whole string to the right-hand side by two positions
+
+solution 1:
+每次移动一个
+O(n) = kn
+
+solution 2: I love yahoo 的trick
+abcd | ef -> ef | abcd
+
+Discussion
+1. the idea of "i love yahoo" can be combined to form more complex problem.
+e.g. if we have empty/leading/trailing spaces in the input
+
+2. The idea can be extended to other problems as well
+	a. string shifting by X chars to the right:
+		"abcdef" shift left by two -> "cdefab"
+		step1: 两个区间各自reverse 'ab|cdef'-> 'ba|fedc'
+		step2: 整个reverse 'ba|fedc'-> 'cdef|ab'
+
+
+
+5. character replacement
+example: student -> stuXXt (den->XX)
+                            s1   s2
+
+EXAMPLE1: 
+input = s t u d e n t d e n t
+expected = s t u X X t X X t
+
+input = s t u d e n t d e n t
+	s
+        f
+
+input = s t u d e n t d e n t
+	  s
+          f
+
+input = s t u d e n t d e n t
+	    s
+            f
+
+input = s t u d e n t d e n t
+	      s
+              f
+
+input = s t u X X n t d e n t
+	          s
+                    f
+
+input = s t u X X t t d e n t
+	            s
+                      f
+
+input = s t u X X t X X e n t
+	                s
+                            f
+
+input = s t u X X t X X t n t
+	                  s
+                              f
+
+slow: all letters to the left hand side of slow are results to return
+
+fast: fast index to scan the whole string
+
+
+
+
+Example2: 
+当替换的长度小于等于被替换的长度时，example1可以正常运行。
+但是如果替换的长度大于被替换的长度呢？
+www.yahoo.com/?q=flower_market#flower_store
+s1 = "_"
+s2 = "20%"
+
+step1: scan the input from the left to the right to find all occurrence of s1 -> 2 in this string
+
+step2: pre-calculate the new size = n + 2*(s2.size() - s1.size()) extend the length of the input by 4 letters
+
+step3: use 2 pointers
+
+
+www.yahoo.com/?q=flower_market#flower_store _ _ _ _
+
+slow: all letters to the right hand side of slow are the final results to return
+fast: current index
+
+www.yahoo.com/?q=flower_market#flower_store _ _ _ _
+					          s
+					  f
+
+www.yahoo.com/?q=flower_market#flower_store _ _ _ e
+					        s
+					 f
+
+www.yahoo.com/?q=flower_market#flower_store _ _ r e
+					      s
+					f
+
+......
+
+www.yahoo.com/?q=flower_market#flower_stors t o r e
+				         s
+				     f
+
+www.yahoo.com/?q=flower_market#flower_s20%s t o r e
+				      s
+				    f
+
+www.yahoo.com/?q=flower_market#flower_r20%s t o r e
+				     s
+				   f
+
+www.yahoo.com/?q=flower_market#flowerer20%s t o r e
+				    s
+				  f
+
+......
+
+
+
+summary of char replacement
+student -> stuXXt (den -> XX)
+                   s1     s2
+		  (den -> XXXXX)
+SOLUTION:
+case1: if s1.length >= s2.length
+	step1: find every single occurrence of s1 in the original string, and just replace s1 with s2, until we are done
+
+
+case2: if s1.length < s2.length
+	how many extra space should we get???
+	step1: count how many times s1 show up in the original string. e.g. two times 
+	step2: 2 * (s2.size - s1.size) 
+
+
+
+
+
+
+STRING ADVANCED TOPIC
+
+1. shuffling e.g. ABCD1234->A1B2C3D4
+2. Permutation(use DFS)
+3. Decoding/Encoding aaaabcc->a4b1c2 (run length coding)
+4. sliding windows using slow/fast pointers
+	4.1 longest substring that contains only unique chars abcda
+
+1. String shuffling
+1.1 First direction: "A1B2C3D4E5"->"ABCDE12345"
+		A1B2C3D4E5
+        A1B2C3            D4E5
+     A1   B2   
+    A  1  B  2  C 3     D 4 E 5 
+==================================
+     A1  B2             
+      |   |
+        AB12  C3        DE45
+         |     |         |
+           ABC123      DE45
+             |          |
+               ABCDE12345
+
+1.2 Second direction: "ABCDE12345" -> "A1B2C3D4E5"  (*** in place ***)
+
+              CHUNK1|CHUNK2|CHUNK3|CHUNK4
+
+		   AB|CD|12|34    1ST LAST STEP
+		   
+	  	 AB  12  CD  34   2ND LAST STEP
+		 
+ 		A 1 B 2 C 3 D 4   3RD LAST STEP
+
+CRIDICAL DETAILS: we need guarantee size of Chunk 1 == size of Chank 3
+关键问题：如果为奇数怎么解决
+
+index = 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+        A B C D E F G 1 2 3 4  5  6  7
+	CHUNK1 [0-2] CHUNK2 [3-6] CHUNK3 [7-9] CHUNK4 [10-13]
+
+	size = 14
+	mid = left + 0.5 * size = 7
+	leftmid = left + 0.25 * size = 3
+	rightmid = left + 0.75 * size = 10
+
+void convert(char a[], int left, int right) {
+	if (right - left <= 1)
+		return;
+	int size = right - left + 1;
+	int mid = left + size/2;
+	int leftmid = left + size/4;
+	int rightmid = left + size * 3/4;
+
+	Reverse(a, leftmid, mid - 1); // I love yahoo trick
+	Reverse(a, mid, rightmid - 1);
+	Reverse(a, leftmid, rightmid - 1); // DE123->123DE
+
+	convert(a, left, left + 2 * (leftmid - left) - 1);
+	convert(a, left + 2 * (leftmid - left), right);
+} 
+
+2. string permutation (DFS 经典例题)
+Q2.1 assume no duplicate letters
+见DFS
+
+Q2.2 Have duplicate letters in input string.
+use hash set
+
+		a b1 b2 b3 c
+L1    a(bab2b3c)   b1(ab2b3c)   b2(b1ab3c)  c(b2b1ab3)  b3(cb2b1a)
+		   	        重复	    		重复
+
+
+public void permutation(char[] c, int index){
+	if (index == c.length){
+		printArray(c);
+		return;
+	}
+	HashSet<Character> st= new HashSet<Character>();
+	for (int i = index; i < c.length; i++){
+		if (!st.contains(c[i])){
+			st.add(c[i]);
+			swap(c, index, i);
+			permutation(c, index + 1);
+			swap(c, index, i);
+	}
+}
+
+3. String Encoding/Decoding: "aaabccaaaaa"->"a3b1c2a5"
+
+Run Length Encoding
+
+input = a a a a a z b b b w c c
+
+
+
+
+step1: left to right, we only deal with the pattern that become shorter (leave z, w unchanged), and in the meantime, we count how many times only 1 copy of letter occured in the string
+
+step2: right to left, perform the pre-calculation based on the counter in step1, do the same thing do the copy(但是要先数字在字母)
+
+开始step1:
+counter = 0   记录只出现一次的字母的数目
+input = a a a a a z b b b w c c
+        s
+        f
+
+input = a 5 a a a z b b b w c c
+            s
+                  f
+
+input = a 5 z a a z b b b w c c  先不处理z只是记录  counter = 1
+              s
+                    f
+ 
+input = a 5 z b 3 z b b b w c c
+                  s
+                          f
+
+input = a 5 z b 3 w b b b w c c  先不处理z只是记录  counter = 2
+                    s
+                            f
+
+input = a 5 z b 3 w c 2 b w c c
+                        s
+                               f
+结束step1
+
+开始step2:
+input = a 5 z b 3 w c 2 b w c c   (step1 result)
+                        s
+                                f
+counter = 2
+根据counter 预留空间，移动指针
+input = a 5 z b 3 w c 2 _ _ c c
+                        s
+                      f
+数字走一步，连续字母添加1
+input = a 5 z b 3 w c 2 _ _ c c
+                        s
+                      f
+
+input = a 5 z b 3 w c 2 _ _ c c
+                          s
+                      f
+先数字在字母，直接copy
+input = a 5 z b 3 w c 2 c 2 c c
+                      s
+                  f
+只有字母
+input = a 5 z b 3 w w 1 c 2 c c
+                  s
+                f
+先数字在字母，直接copy
+input = a 5 z b b 3 w 1 c 2 c c
+              s
+            f
+只有字母
+input = a 5 z 1 b 3 w 1 c 2 c c
+          s
+          f
+先数字在字母，直接copy
+input = a 5 z 1 b 3 w 1 c 2 c c
+      s
+      f
+
+
+
+4. sliding window in a string (slow + fast indices)
+
+Q4.1 Longest substring that contains only unique char
+Given a string, return the length of the longest substring without duplicate characters. For example, the longest substrings repeating characters for "BDEFGADE" are "BDEFGA", whose size is 6.
+
+follow up: without duplicate k-times characters. (最多重复次数不超过k), e.g. k = 5)
+
+window + hashmap
+
+
+hashmap <char, int>, int global_max
+             0 1  2 3 4 5 6  7
+e.g. input = B D1 E F G A D2 E 
+
+
+
+hashmap <char, int> <B,1>
+global_max = 1
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _
+        L
+        R
+
+hashmap <char, int>: <B,1> <D,1>
+global_max = 2
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E    假设k = 1 
+        _ _
+        L
+          R
+
+hashmap <char, int>: <B,1> <D,1> <E,1> 
+global_max = 3
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _
+        L
+             R
+
+hashmap <char, int>: <B,1> <D,1> <E,1> <F,1> 
+global_max = 4
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _ _
+        L
+               R
+
+hashmap <char, int>: <B,1> <D,1> <E,1> <F,1> <G,1> 
+global_max = 5
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _ _ _
+        L
+                 R
+
+hashmap <char, int>: <B,1> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _ _ _ _
+        L
+                   R
+
+hashmap <char, int>: <B,1> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _ _ _ _
+        L
+                   R
+
+hashmap <char, int>: <B,1> <D,2> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+        _ _  _ _ _ _ _
+        L
+                     R
+
+这时D = 2 > k，所以移动左指针，并且修改相对应的key value，*** 但是不能修改global_max
+hashmap <char, int>: <B,0> <D,2> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+          _  _ _ _ _ _
+          L
+                     R
+
+这时依然是D = 2 > k，所以继续移动左指针，并且修改相对应的key value，以及global_max
+hashmap <char, int>: <B,0> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+             _ _ _ _ _
+             L
+                     R
+
+这时D = k = 1，不再移动左指针
+hashmap <char, int>: <B,0> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+             _ _ _ _ _
+             L
+                     R
+
+继续移动
+hashmap <char, int>: <B,0> <D,1> <E,2> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+             _ _ _ _ _  _
+             L
+                        R
+
+再次出现E = 2 > k, 所以移动左指针，并且修改相对应的key value，*** 但是不能修改global_max
+hashmap <char, int>: <B,0> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+               _ _ _ _  _
+               L
+                        R
+这时E = k = 1，不再移动左指针
+hashmap <char, int>: <B,0> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+               _ _ _ _  _
+               L
+                        R
+
+继续移动R 出界，结束
+hashmap <char, int>: <B,0> <D,1> <E,1> <F,1> <G,1> <A,1>
+global_max = 6
+        0 1  2 3 4 5 6  7
+input = B D1 E F G A D2 E 
+               _ _ _ _  _
+               L
+                          R
+
+Critical point:
+we must maintain a hash_table that reflects the real-time information about the elements within the sliding window;
+When we move the R border, we add information to the hash_table
+When we move the L border, we delete (substract) information from the hash_table
+
+Solution:
+Use two pointers, slow and fast
+slow(left) the begin index of a solution
+fast(R) the current index
+
+Q4.1_1.PNG
+
+Code:
+Q4.1_CODE_1.PNG Q4.1_CODE_2.PNG
+
+
+Q4.2 Find all anagrams (同形异构体) of a substring S2 in a long string S1
+string s2 = "aabc"
+string s1 = "zzzz cde bcaa cyywww"
+
+anagrams
+bob 和 obb; abc 和 cba; ...
+
+1)
+Primitive idea: for each start index in s1, we sort the substring from i to (i+m-1), and compare s2? == s1.substring[i, i + m - 1]
+Time = O(n * m * log(m))
+
+2)
+Sliding window idea: 
+
+input:
+string s2 = "aabc"
+string s1 = "zzzzcdebcaabcyywww"
+
+need to store the s2 information into a hash map
+hash_table <a,2> <b,1> <c,1>
+
+also need to store the types of letters remain in the s2
+type_of_letters_to_match = 3
+
+开始状态
+hash_table <a,2> <b,1> <c,1>
+type_of_letters_to_match = 3
+input = "zzzzcdebcaabcyywww"
+
+
+hash_table <a,2> <b,1> <c,1>
+type_of_letters_to_match = 3
+input = "zzzzcdebcaabcyywww"
+         ____                窗口长度为4，因为s2长度为4
+
+移动，因为z没有在hash_table中，所以不修改；
+但新进入的c在hash_table中，所以hash_table的c减少1；
+同时，因为有一个counter变成了0，所以type_of_letters_to_match减少1；
+hash_table <a,2> <b,1> <c,0>
+type_of_letters_to_match = 2
+input = "zzzzcdebcaabcyywww"
+          ____                
+
+继续移动，z，d，都不在hash_table中，所以不变；
+hash_table <a,2> <b,1> <c,0>
+type_of_letters_to_match = 2
+input = "zzzzcdebcaabcyywww"
+           ____                
+
+继续移动，z，e，都不在hash_table中，所以不变；
+hash_table <a,2> <b,1> <c,0>
+type_of_letters_to_match = 2
+input = "zzzzcdebcaabcyywww"
+            ____   
+
+继续，出z，入b，b在hash_table中，需要改变hash_table 和 type_of_letters_to_match；
+hash_table <a,2> <b,0> <c,0>
+type_of_letters_to_match = 1
+input = "zzzzcdebcaabcyywww"
+             ____   
+
+继续，出c，入c，两者都在hash_table中，都需要修改；
+出c：c的counter加1；因为多了一个不为零的，所以type_of_letters_to_match 加一；
+入a：c的counter减1；因为多了一个为零的，所以type_of_letters_to_match 减一；
+（相当于没有改变hash_table， type_of_letters_to_match，但实际是变了的）
+hash_table <a,2> <b,0> <c,0>
+type_of_letters_to_match = 1
+input = "zzzzcdebcaabcyywww"
+              ____   
+
+出d（无改变），入a（a counter -1，type不变）；
+hash_table <a,1> <b,0> <c,0>
+type_of_letters_to_match = 1
+input = "zzzzcdebcaabcyywww"
+               ____   
+
+出e（无改变），入a（a counter -1，type -1）；
+hash_table <a,0> <b,0> <c,1>
+type_of_letters_to_match = 0
+input = "zzzzcdebcaabcyywww"
+                ____   
+
+type_of_letters_to_match = 0, 说明是一个结果，（solution1）
+移动窗口，更新hash_table和type_of_letters_to_match之后继续寻找
+
+......
+
+
+Time = O(n)
+
+Q4.3 Given a 0-1 array, you can flip at most k '0's to '1's. Please find the longest subarray that consists of all '1's.
+
+e.g. change k = 4 zero to one, such that the contiguous 1s are longest
+
+0101010100001110101010101010101010000100101
+
+Solution: find a slide window that contains 4 zeros
+
+When to move the right border: when the counter_of_zero <= k
+
+When to move the left border: when the counter_of_zero > k
+
+
+
+
+
+
+Q & A
+1. 5. char replacement: 需要的额外空间与in place，要在char array后面加的额外空间为O(n)
+
+2. 2. string suffuling: 
+正向的merge sort需要call stack的额外空间，反向merge sort不需要额外空间
+
+3. 2. string suffuling: 
+如果不配对呢
+A B C D E F G H I J K | 1 2 3 4 5 6 7
+
+i love yahoo trick
+A B C D E F G | H I J K | 1 2 3 4 5 6 7
+
+                swap        swap
+
+A B C D E F G | 1 2 3 4 5 6 7 | H I J K
+然后继续原来的方法
