@@ -1,0 +1,373 @@
+第十节 Bit representation of a number and bit operation
+
+int a = 1;
+
+Binary representation of
+"1" 0000 0000 0000 0000 0000 0000 0000 0001     least significant bit
+"7" 0000 0000 0000 0000 0000 0000 0000 0111
+					1*2^2 + 1*2^1 + 1*2^0 = 7
+
+
+
+
+"two components"表示负数
+int a = 0
+unsigned int a = 0 11111111111111111111(32个1) = 1*2^32 - 1 (最左边的数字代表正负号)
+
+int 最左侧的不代表1，0，而是代表正负号 （0：positive；1：negative）
+unsigned 最左侧不是正负号
+
+int表示负数？
+变反加一
+1 = 0000 0000 0000 0000 0000 0000 0000 0001
+-1 = 
+变反 1111 1111 1111 1111 1111 1111 1111 1110
+加一 1111 1111 1111 1111 1111 1111 1111 1111
+
+
+
+bit operator
+1）
+& AND vs && (i.e. if (cond1 && cond2)):
+for instance: working with a byte(the char type):
+ 1100 1110
+&1001 1000
+=1000 1000
+
+1 & 1 = 1; 否则都为零
+
+2）
+| OR vs || (if (cond1 || cond2)):
+只要有一个为1，则为一，否则为零
+
+3）
+~ NOT:
+每一位（每一个bit）的数字，1->0, 0->1
+
+int c = ~a
+
+4）
+^ XOR （异或）
+00->0
+11->0
+10->1
+01->1
+只要两个不一样，就得1
+
+5）
+<< left shift 右侧补充零
+int a = 1000 0000 0000 0000 0000 0000 0000 0001
+int c = a << 1;  --> 0000 0000 0000 0000 0000 0000 0000 0010
+
+向左移动一位，最左侧的1被删除
+右侧添加一个1
+
+
+6）
+>> right shift 左侧补充零(positive number?)
+e.g. x>>1; 
+
+int a = 01100101
+int c = a>>2; --> 00011001
+
+
+
+
+
+
+
+Discussion
+1.
+一个软件对于不同浏览器的版本是否合适
+e.g.
+IE 6-10
+Chrome
+FireFox
+
+int xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+int xxxx xxxx xxxx xxxx xxxx xxxx xxxx x   z   y   x
+			.........	   ie6 ie7 ie8
+
+
+
+
+Common Questions:
+1. given an integer x, how to set x's k-th bit to 1?
+e.g. x == xxxx 0xxx and k = 3
+output: xxxx 1xxx
+
+solution:
+int bit_setter = 1;
+bit_setter = bit_setter << k;
+x = x | bit_setter; // bit or operation
+
+2. given an integer x, how to set x's k-th bit to 0?
+e.g. x == xxxx 1xxx and k = 3
+output: xxxx 0xxx
+
+int bit_setter = 1;
+bit_setter = bit_setter << k;
+bit_setter = ~bit_setter;
+x = x & bit_setter; // bit or operation
+
+3. determine whether a number is a power of 2(x == 2^n) n > 0
+solution:
+regular:
+public boolean isPowerOfTwo(int x){
+	if (x < 1){
+		return false;
+	}
+	for (int i = x; i > 1; i /= 2){
+		if (i % 2 == 0){
+			return false;
+		}
+	}
+}
+
+Bit operation:
+public boolean isPowerOfTwo(int x){
+	if (x < 1){
+		return false;
+	}
+	return !(x & (x - 1));
+}
+
+public boolean isPowerOfTwo(int x){
+	return (x & (x - 1) == 0 && x != 0);
+}
+
+4. How to determine the number of bits that are different between two positive integers?
+int x = 0101;
+int y = 0111;
+
+return 1
+
+使用XOR
+
+public int numberOfDiffBits(int x, int y) {
+	x = x ^ y;
+	int count = 0;
+	for (int i = 1; i <= 32; i++) {
+		x = x >> 1;
+		if (x & 1 == 1) {
+			count++;
+		}
+	}
+	
+}
+
+一行的版本
+public int numberOfDiffBits(int a, int b) {
+	int count = 0;
+	for (unsigned int c = a ^ b; c != 0; c = c >> 1)
+		count += (c & 1);
+	}
+}
+
+5. what happend if we assgin a negative number to an unsigned integer(必须是正数)?
+A: compiling error
+B: nothing happen/ correct answer 1
+C: runtime error
+D: very large number that is totally unexpected
+
+答案是D
+
+example: unsigned a = -1; // 11111...11
+
+因为负数的第一位是符号，但unsigned不是，所以就会把-1当成一个32/64 bit的最大的数字（正）
+
+if(a < 0){
+	command 1...
+} else {
+	command 2...
+}
+
+最终运行command2，因为结果为最大的正数
+
+principle:
+when we assign a negative number to an unsigned integer,
+the binary representation does NOT change. However, we will 
+calculate the value of the unsigned integer by using the current binary 
+representation.
+
+6. determine whether a word contains all letters that are unituq(no duplicate leeters in the word)
+input = student //  output = false
+
+Solution 
+
+Simple assumption:
+1st assume we use the ASCII encoding
+assume only 26 chars (a ~ z)
+起始将所有的值对应为0，（一个0的数字），随后只要出现了某一位数字，就将其变为1，如果本来就是1，则返回false
+
+public boolean isUnique(String word) {
+	if (word == null){
+		return true;
+	}
+	int dic = 0; // 32's 0
+	for (int i = 0; i < word.length(); i++){
+		// 字符减去字符对应着其相应asc码数字的相减
+		int pos = word.charAt(i) - 'a';
+		if ((dic >> pos) & 1 == 1) {
+			return false;
+		} else {
+			// 本身和向左移了pos位的1做或运算，将对应的位数变为1
+			dic = dic | (1 << pos);
+		}
+	}
+	return true;
+}
+
+Follow up:
+Complex assumption:
+all letters, not only contains a ~ z, but all ASCII code (256)
+
+*** Terminology: bit vector
+int bit_map[8] // 8 * 32 bits = 256 bits
+
+32 bit == 4 byte = integer
+How many bits do we need to represent ASCII code?? 256 bits
+256 / 32 = 8 integers to represents 256 bits
+
+int bit_map[8] = (0,0,0,0,0,0,0,0);
+108-th bit / 32 = 3.x
+108-th bit % 32 = 12 
+
+第三个integer的第12位(从右开始数)
+
+bit_map[0] = 0000 0000 0000 0000 .......
+bit_map[1] = 0000 0000 0000 0000 .......
+bit_map[2] = 0000 0000 0000 0000 .......
+bit_map[3] = 0000 0000 0000 0000 .......
+......
+bit_map[7] = 0000 0000 0000 0000 .......
+
+all letters, not only contains a ~ z, but all ASCII code (256)
+
+using bit vector to represent the 256 ASCII code
+
+public boolean isUnique(String word) {
+	if (word == null){
+		return true;
+	}
+	int[] dic = new int[8] ; // 32's 0
+	for (int i = 0; i < word.length(); i++){
+		// 找到input char 在 bit vector中的位置
+		int pos = word.charAt(i);
+		int row = pos / 32;
+		int col = pos % 32;
+		if ((dic[row] >> col) & 1 == 1) {
+			return false;
+		} else {
+			// 本身和向左移了pos位的1做或运算，将对应的位数变为1
+			dic[row] = dic[row] | (1 << col);
+		}
+	}
+	return true;
+}
+
+7. How to reverse all bits of a number?
+1:26:57
+
+e.g. 1010xxxxx0010 -> 0100...0101
+
+swap固定位置的1和0
+	X ...0011100011010... Y
+	i->                 <-j
+
+XOR 
+	1 0000000000000000000 1
+-------------------------------------
+
+与1做XOR，1一定变为0，0一定变为1                              
+
+solution 1:
+public int reverse(){
+	int L = 31;
+	int R = 0;
+	
+	while (R < L) {
+	
+		if ((num >> L) & 1 != (num >> R) & 1) { // 如果与1&的结果一样，则不变，否则取反
+			num = num ^ (num << L);
+			num = num ^ (num << R);
+		}
+		L--;
+		R++;		
+	}
+	return num;
+}
+
+
+solution2 C++ version:
+unsigned int swapAPairOfBite(unsigned int x, int i, int j){
+	unsigned int right_bit = ((x >> i) & 1);
+	unsigned int left_bit = ((x >> j) & 1);
+	// if the two int are different
+	if (right_bit ^ left_bit) { // 相等为0，不相等为1
+		x ^= ((1U << i) | (1U << j)); // 1U is unsigned number: 1, 1U << 0 = 1; 1U << 1 = 2; 1U << 2 = 4
+	}
+	return x; 
+}
+unsigned int reverseBit(unsigned int num) {
+	unsigned = sizeof(num) * 8;
+	for (int i = 0; i < n/2; ++i){ // ??? why / 2
+		num = swapAPairOfBite(num, i, n - i - 1);
+	}
+	return num;
+}
+
+8, Given a number x, how to get the hexadecimal representation of the number in string type?
+e.g. 29 -> "0x1D" (十六进制) 
+
+'0x15' vs 15
+加0x是十六进制
+
+10进制 => 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+16进制 => 0 1 2 3 4 5 6 7 8 9 A B C D E F
+
+0x F    F    F    F    0    0    0    1
+   1111 1111 1111 1111 0000 0000 0000 0001 == 32 bits
+
+solution1: and assume x > 0
+string change(int x) {
+	string result;
+	char cur;
+	while (x > 0) {
+		int remainder = x % 16;
+		if (remainder <= 9) {
+			cur = "0" + remainder;
+		} else {
+			cur = "A" + remainder - 10;
+		}
+		result.push_back(cur); // 
+		x = x / 16;
+	}
+	result = result.push_back("X0");
+	return result.reverse();
+}
+
+solution2: for all, x could smaller than 0;
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
