@@ -1,0 +1,490 @@
+25 recursion III
+
+Q1. Tree + RECURSION 第一类问题
+
+Use recursion to return values in a bottom-up way in binary tree.
+
+Q1.1 Determine whether a binary tree is a balanced binary tree (O(nlogn) solution).
+
+	what's the definition of 'balanced'? it could be:
+		the tree has a minimum possible overall height
+		no leaf is too further away. i.e. 0 or 1, from root than any other leaf
+		left and right sub-trees have similar height, i.e. difference is 0 or 1
+	
+
+
+
+	First question: what's the definition of a balanced binary tree?
+
+(1) 旧的解法
+public boolean isBalanced(TreeNode root) {
+	call getHeight
+}
+
+Q1.2 Determine whether a binary tree is a balanced binary tree (O(n) solution).
+(2) 新的解法（O(n)）
+
+public boolean isBalanced(TreeNode root) {
+	call getHeight
+}
+// new getHeight function (because, if the subtree is not balanced, then it will not be balanced???)
+public int getHeight(TreeNode root) {
+	if (root == null) {
+		return 0;
+	}
+	int leftHeight = getHeight(root.left); //step 1
+	int rightHeight = getHeight(root.right);
+	
+	if (leftHeight == -1 || rightHeight == -1
+	    || Math.abs(leftHeight - rightHeight > 1)) { //step 2
+		return -1	
+	}
+
+	return Math.max(leftHeight , rightHeight) + 1; //step 2
+}
+
+Q1.3 Midterm 2 question 2
+Given a binary tree in which each node element contains a number. 
+Find the maximum possible sum from one leaf node to another.
+
+The maximum sum path may or may not go through root. 
+For example, in the following binary tree, the maximum sum is 27(3 + 6 + 9 + 0 - 1 + 10). Expected time complexity is O(n)
+
+Way of thinking:
+1. What do you expect from your left child | right child?
+	max single path in my left subtree
+	max single path in my right subtree
+2. What do you want to do in the current layer?
+	update global_max = left + right + root.value if feasible
+3. What do you want to report to your parent?
+	it is usually the return type of the recursion function
+
+解题见第二次期中考试
+
+Q1.4
+
+Get Maximum sum of the path cost from any node to any node (not neccessrily from leaf to leaf)?
+
+
+Way of thinking:
+1. What do you expect from your left child | right child?
+	max single path in my left subtree [ended at the left child node], if this value is negative, we discard it
+	max single path in my right subtree [ended at right child node], if this value is negative, we discard it
+2. What do you want to do in the current layer?
+	update global_max = left + right + root.value if feasible
+3. What do you want to report to your parent?
+	it is usually the return type of the recursion function
+
+solution:
+
+int helper(TreeNode* root, int& max) {
+	if (root == NULL) {
+		return 0;
+	}
+	
+	int left = helper(root->left, max);
+	int right = helper(root->right, max);
+	
+	left = left < 0 ? 0: left;
+	right = right < 0? 0: right;
+
+	max = max > (root->value + left + right) ? max : (right-value + left +right);
+
+	return left > right ? (left + root->value): (right + root->value);
+}
+
+Q.2 Tree + recursion 第二类问题：(Path Problem in binary tree)
+Discussion:
+Note that: Tree 相关问题，路径种类可以分为两大类
+
+Class1: 人字形path，这类题一般需要从下往上传integer value(e.g. Q1.1-1.4 above)
+Class2: 从root往下 （直上直下）path
+
+	***Key point: carry a 直上直下 path prefix （非人字形）while traversing the tree:***
+
+		a. complete path from leaf to root
+		b. sub-section of complete path from leaf to root
+
+			10 = root as the start point
+		     /      \
+	           -2        7
+		 /   \   
+	        8     -4
+
+Prefix_of_path = (10, -2, -4)
+
+Q2.1 Find the maximum path cost for all paths from leaf ot root in a Binary Tree
+Given a Binary Tree, find the maximum sum path from a leaf to root.
+For example, in the following tree, there three leaf to root paths 8->2->10, -4->-2->10 and 7->10
+The sums of there three paths are 16,4,17. The maximum of the is 17 and the path for maximum is 7->10
+
+			10 = root as the start point
+		     /      \
+	           -2        7
+		 /   \   
+	        8     -4
+
+Prefix_of_path = (10, -2, -4)
+
+***构思code先想清楚signiture(input, output)***
+
+solution:
+int getMaxPath(TreetNode* root) {
+	int global_max = INT_MIN;
+	maxPathSum(root, 0, global_max);
+	return global_max;
+}
+
+public void maxPathSum(TreeNode root, int sum, int global_max) {
+	if (root == null) {
+		return;
+	}
+
+	if (root.left == null && root.right == null) {
+		global_max= max(sum + root->, globalMax0;)
+	}
+	
+	maxPathSum(root->left, sum + root->val, global_max);
+	maxPathSum(root->right, sum + root->val, global_max);
+}
+
+Q2.2 
+Given a binary tree in which each node contains an integer number.
+Determine if there exists a path from any node to any node (the two nodes can be the same node and they can only be on the path from root to one of the leaf nodes),
+that the sum of the numbers in the path is equal to the given target number.
+
+example:
+		-5
+	      /    \
+             2      11 
+                  /   \
+	         6     14
+                / \
+	       8   10
+
+if target = 17, there exists a path 11->6, the sum of the path is target
+if target = 100, there does not exist any paths sum of which is target
+
+path_prefix = {-5, 11, 6}
+17:            root     cur，判断这个list里面是否有17 (e.g. 遍历)
+100:                         判断是否有一百
+
+solution 1:
+List<integer> path_prefix = new ArrayList<>();
+
+// helper function
+public void maxPathSum(TreeNode root, List<integer> path_prefix, int target) {
+	if (root == null) {
+		return; // base case 1
+	}
+
+	path_prefix.add(root.key); // add new node value to the list
+	if (helper(path_prefix, target) == true) {
+		flag = true; // global variable flag, it is the final result
+	}
+	
+	maxPathSum(root->left, path_prefix, target); 
+	maxPathSum(root->right, path_prefix, target);
+	path_prefix.remove(); // need remove to go back to previous node
+}
+
+Time: O(n^2)      (helper():O(n))
+
+solution 2:
+
+recursion + past_prefix_sum(dp3)
+
+00:55:00 - 1:00:00
+
+public void maxPathSum(TreeNode root, List<integer> path_prefix, Hashset<> prefix_sum, int target) {
+
+Q2.3 Maximum Path Sum Binary Tree III
+Given a binary tree in which each node contains an integer number. 
+Find the maximum possible sum from any node to any node (the two nodes canbe the same node and they can only be on the path from root to one of the leaf nodes).
+
+Assumptions:
+The root of given binary tree is not null
+
+Example:
+
+		-5
+	      /    \
+             2      11 
+                  /   \
+	         6     14
+                / \
+	       8   10
+
+The maximum path sum is 11 + 14 = 25
+
+path_prefix = {-5, 11, 14}
+
+solution1: Time = O(n^2)
+can be the same as that introduced in solution 1 of Q2.2 (only different with the helper function)
+
+solution2: optimized (DP solution: past prefix sum 思想): 从上往下的max subarray sum
+// sum represents [from the root node to the current node] the largest sum of the path prefix (must including the current node)
+public void helper(TreeNode root, int[] max, int sum) {
+	if (root == null) {
+		return; // base case
+	}
+	
+	if (sum < 0) {
+		sum = root.value;
+	} else {
+		sum += root.value;
+	}
+
+	max[0] = Math.max(max[0], sum);
+	helper(root.left, max, sum);
+	helper(root.right, max, sum);
+}
+
+Time = O(n)
+Space = O(n) (call stack of the recursion)
+
+solution3: // 从下往上的max subarray sum
+public int helper(TreeNode root, int[] max, int sum) {
+	if (root == null) {
+		return;  // base case
+	}
+	
+	if (sum < 0) {
+		sum = root.value;
+	} else {
+		sum += root.value;
+	}
+	
+	max[0] = Math.max(max[0], sum);
+	helper(root_left, max, sum);
+	helper(root_right, max, sum);
+}
+
+Time = O(n)
+Space = O(n)
+
+*** 保存一个path prefix 的思想，可以一通百通 ***
+
+Q3 Tree + recursion 第三类问题：tree serialization problem
+Q3.1 Given a Binary Tree, convert it to a Doubly Linked List in in-order sequence.
+		10
+             /      \
+            5        15
+	  /   \    /   \
+         2    7   12    20
+
+Output 2<->5<->7<->10<->12<->15<->20
+
+Diss:
+print in-order ===> in-order linkedList
+
+We only need to get the previous node's address (position)
+
+Key Points:
+	1. When traverse to a current node, we need to know which node was the previous node.
+	2. *** Never ever lost the control over the new head (We need to return the new Head) ***.
+
+*** How to describe your thought: ***
+1. signature of the function:
+
+2. structure of the code:
+base case
+it's an implementation of the in-order traversal of a binary tree. It converts Binary Tree to Doubly LinkedList.
+
+代码结构和in-order print 一样，只是不是打印而是其他处理
+
+solution: 
+
+static node* prev = NULL;
+
+void BinaryTree2DoubleListedList(node* root, node** head) {
+	if (root == NULL) return; // base case
+	
+	// initialize previously visited node as NULL, This is a static so that
+	// the same value is accessible in all recursive calls
+	BinaryTree2DoubleLinkedList(root->left, head);
+	if (prev == NULL) {
+		*head = root; // unique case at the begining
+	} else {
+		root->left = prev; // point to left
+		root->right = root; // point to right
+	}
+	prev = root;
+	BinaryTreeDoubleLinkedList(root->right, head);
+}
+
+Q4. Tree + Recursion 第四类问题：Tree De-serialization Problems
+Reconstruct a tree by using xxx-order and in-order traversal seqeuences
+
+
+Can we reconstruct a unique tree with post and pre order tree? NO
+	1				2
+       /                                  \
+      2                                    1
+
+
+Diss:
+Resconstruct a tree by using xx-order and in-order traversal sequence.
+
+此类问题的要点就是把global的问题一分为二(recursively),没半边返回一个subtree的root mode.
+
+		10
+             /      \
+            5        15
+	  /   \    /   \
+         2    7   12    20
+
+Output 2<->5<->7<->10<->12<->15<->20
+
+先找到root，然后再左半边树，右半边树，recursively寻找root
+
+		2<->5<->7<->	10	<->12<->15<->20
+		left-root      root       right-root
+
+2<->	5	<->7<->		10	 <->12<->15<->20
+			      root 
+left   root     right			  left   root  right
+
+index       0  1  2  3  4  5  6
+preorder:   10 5  2  7  15 12 20
+inorder:    2  5  7  10 12 15 20
+
+首先，preorder的第一个值一定是root
+
+index       0  1  2  3 | 4  5  6
+preorder:   10 5  2  7 | 15 12 20
+inorder:    2  5  7  10| 12 15 20
+
+找到inorder 中该root的index，该index左边为左子树，右边为右子树
+
+*** recursion
+1. 表象上 function calls itself
+2. in essence: boil down a big problem into smaller one|ones, and then restore the global solution by using these smaller ones.
+3. implementation:
+	base case	
+	recursive rule
+4. in more details (recursive function signature must keep the same logic)
+***
+
+solution:
+hash_map for in-order sequence, e.g. <key = 10, value = 3>
+# idxMap is the hash_table that maps each node in the in-order array to its index in in-order array, e.g. <key = 10, value = 3>
+
+// Recursion function returns the sub-tree rest.
+// in_l, in_r, are pointers for the inorder left subtree and right subtree
+public TreeNode construct(int[] in, int in_l, int in_r,  (in, 0, 6)           (in, 0, 3)
+			  int[] pre, int pre_l, int pre_r, (pre, 0, 6)        (pre, 1, 4)
+			  Map<integer, integer> idxMap) {
+	if (in_l > in_r) {
+		return NULL;  // base case
+	}
+
+	TreeNode root = new TreeNode(pre[pre_l]); // initilize the note
+	int leftSize = idxMap.get(root.key) - in_l; // the size of the left-subtree
+	
+	root.left = construct(in, in_l, in_l + leftSize - 1, // in: in-order array, in_l: inorder array current root index
+			      pre, pre_l + 1, pre_l + leftSize, // 
+			      idxMap);
+
+	root.right = construct(in, in_l + leftSize + 1, in_r,			       
+			       pre, pre_l + leftSize + 1, pre_r,
+			       idxMap);
+
+	return root;
+}
+
+***传递参数的物理意义，上一层下一层物理意义必须完全一样***
+
+
+
+Q4.2 How to reconstruct a binary tree using post-order and in-order sequences of all nodes (same as pre-order + in-order)
+
+
+
+
+Q4.3 Construct a tree from inorder and Level order traversals of binary tree
+Given the in-order and level-order traversal sequence of a BT (you can assume all unique numbers in the tree), how to construct the binary tree.
+
+		20
+	    /        \
+           8          22
+         /   \       /   \
+        4     12
+             /  \
+	    10  14
+
+Input: Two arrays that represent inorder and level order of the binary tree
+
+index       = 0  1  2  3  4  5  6
+in-order    = 4  8  10 12 14 20 22
+level-order = 20 8  22 4  12 10 14
+
+maintain two extra arrays to track the level-order left and right subtree
+
+level-order left = [8 4 12 10 14]
+level-order right = [22]
+
+step 1: for each function, build the hash_table for elements in 
+in-order sequence <key = value, value = the index in in-order sequence>
+
+step 2: iterate over level-order one by one
+for each current element x,
+case1: hash_table[x] > (hash_table[20] = 5), x goes to right part's level-order
+
+case2: if hash_table[x] < (hash_table[20] < 5), x goes to left part's 
+level-order.
+
+left half (8 as subtree root) in-order = (4 8 10 12 14) vs Right = (22)
+			   level-order = (8,3,12,10,14) vs Right = (22)
+
+TreeNode* rebuildTree(vector<int> &in, int inLsft, int inRight, 
+		      vector<int> &lev, map<int, int>& n) {
+	if (inLeft > inRight) return NULL; // base case
+	TreeNode* root = new TreeNode(lev[0]);
+	vector<int> level_left;
+	vector<int> level_right;
+	int ind = n[lev[0]];
+	set<int> left_map;
+	for (int i = inLeft; i < ind; ++i) {
+		left_map.insert(in[i]);
+	}
+	for (int i = 1; i < lev.size(); ++i) {
+		if (left_map.find(lev[i]) != left_map.end()) {
+			level_left.push_back(lev[i]);
+		} else {
+			level_right.push_back(lev[i]);
+		}
+	}
+	root->left = rebuildTree(in, inLeft, ind = 1, level_left, n);
+	root->right = rebuildTree(in, ind + 1, inRight, level_right, n);
+	return root;
+}
+
+Time = O(n^2)
+
+diss:
+建立树，关键就是找到root，pre post level order都可以找到开始的root 节点，所以可以将in order 一分为二，从而从inorder找到左右子树。
+
+找到左右子树之后，recursively 继续找到他们的root，最终得到结果。
+
+
+
+Q&A
+1. Construct a binary SEARCH tree from in order traversal only.
+不唯一
+
+应该是 Construct a binary SEARCH tree from not in order(pre order, level order, post order 都可以) traversal only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

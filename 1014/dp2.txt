@@ -1,0 +1,529 @@
+Dynamic Programming 2
+
+DP 的核心思想类似与高中学习的数学归纳法：
+1. 把一个大问题（size == n）的解决方法用比他小的问题来解决，也就是思考从问题size = n - 1增加到size = n的时候，如何用小问题的solution构建大问题的solution
+
+2. 与recursion的关系：
+  2.1 recursion 从大到小解决问题，不记录任何sub solution只要考虑
+     2.1.1 base case
+     2.1.2 recursive rule
+  2.2 DP 从小到大来解决问题，必须记录sub-solution
+     2.2.1 由size(<n) 的subsolution(s) -> size (n) 的solution
+     2.2.2 base case
+     2.2.3 induction rule
+
+
+
+DP的解题常用方法：
+1. 一维的original data (such as a rope, a word, a piece of wood), 求MAX or MIN(cut, merge, etc.)
+  1.1 if the ***weight*** of each smallest element in the original data is *** identical / similar ***
+     1.1.1 e.g. identical: 1 meter of rope
+     1.1.2 e.g. similar:  a letter, a number
+
+	Then this kind of problem is usually simple:
+	Linear scan and look back to the previous element(s) (e.g. fibonacii)
+
+	
+	For example:
+		Longest Ascending Subarray
+		...               Subsequence
+		Maximal Product when Cutting Rope
+		cut palindrome
+  1.2 if the ***weight*** are not the same:
+     1.2.1 e.g. DP1 课后题 砂子归并
+     1.2.2 e.g. 强化习题 切木头
+
+  从中心开花，[index = 0,1,2,3,...,N-1], for each M[i, j], we usually need to try out all 
+  possible k that (i<k<j), M[i,j] = max(M[i,k] +/-/* M[k,j]) (for all possible k)
+
+Q.0
+Previous jump game
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+Each element in the array represents your maximum jump length at that position
+Determine if you are able to reach the last index.
+
+follow up
+Given the same setup as the jump game, can you return the minimum number of jumps
+needed to reach the end instead of just whether or not it is possible to reach the end?
+
+index   0 1 2 3 4
+input   2 3 1 1 4
+
+ M[i]           0   M[i]: in each position, what's the smallest step we could reach the target
+ M[i]         1 0
+ M[i]       2 1 0
+ M[i]     1 2 1 0
+ M[i]   2 1 2 1 0
+ 
+return M[0] = 2
+
+1. base case M[n - 1] = 0
+
+2. induction rule
+	a. M[i] represents the minimum number of jumps needed to jump
+	from the i-th index to the target (n-1)th index
+
+	b. M[i] = 1 + min(M[i+j])   where j <= input[i], && i + j < n
+	 
+
+Time = O(n^2) or
+       O(n * k) where k is the largest number of jumps one can make
+
+Q.1
+Previous largest sum of a subarray
+
+Now Largest sum of a subsequence
+
+Given an unsorted array, find the subarray that has the greatest sum. Return the sum
+
+For example: If the input array is {1,2,4,-1,-2,10,-1}, the greatest sum is achieved by subarray{1,2,4,-1,-2,10}
+
+Solution:
+	1. Base case: M[0] = input[0] // only 1 element in the input
+	2. Induction rule: M[i] represents [from the 0-th element to the i-th element] largest sum of a subarray, including the i-th element.
+	   M[i] = M[i-1] + input[i]   if M[i-1] >= 0
+		  input[i]            otherwise
+
+input1:
+input[N] = {1, }
+N[i] =      1
+
+input[N] = {1, 2, }
+N[i] =      1  3
+
+input[N] = {1, 2, 4, }
+N[i] =      1  3  7
+
+input[N] = {1, 2, 4, -1}
+N[i] =      1  3  7   6   (subarray 是物理连续，所以必须保存下降过程中的每一个)
+
+input[N] = {1, 2, 4, -1, -2}
+N[i] =      1  3  7   6  4
+
+input[N] = {1, 2, 4, -1, -2, 10}
+N[i] =      1  3  7   6  4   14
+
+input[N] = {1, 2, 4, -1, -2, 10, -1}
+N[i] =      1  3  7   6  4   14  13
+
+int global_max_solu = 14
+
+input2
+input1:
+input[N] = {1, }
+N[i] =      1
+
+input[N] = {1, 2, }
+N[i] =      1  3
+
+input[N] = {1, 2, 4, }
+N[i] =      1  3  7
+
+input[N] = {1, 2, 4, -1}
+N[i] =      1  3  7   6   (subarray 是物理连续，所以必须保存下降过程中的每一个)
+
+input[N] = {1, 2, 4, -1, -2}
+N[i] =      1  3  7   6  4
+
+input[N] = {1, 2, 4, -1, -2, -20}
+N[i] =      1  3  7   6  4   -14
+
+input[N] = {1, 2, 4, -1, -2, -20, 10} (此时，包含-20在内的subarray，最大的总和值为-14)
+N[i] =      1  3  7   6  4   -14  10  (由于之前的为负数，所以清零，重新开始)
+
+follow up 1:
+如果只使用O(1)space?
+
+只需要maintain一个temp变量     （为前一个index时，最大和的值）
+just maintain array with a variable
+
+follow up 2:
+what is we want you to return the start and end indices of the solution array.
+
+input2[N] = {1, 2, 4, -1, -20, 10, -1}
+M[i]      =  1  3  7  6   -14  10  9
+
+DEMO: 40:26
+
+
+input2[N] = {1, 2, 4, -1, -20, 1, -1}
+M[i]      =  1  3  7  6   -14  1,  0
+
+VARIABLES WE NEED TO MAINTAIN
+i (pointer)
+int start
+int end
+int solu_start
+int solu_end
+int temp
+int global_max
+
+case1: when to move start: when we set M[i] = input[i], which means,
+	     	           we reset the start index when the previous element is negative (bring negative contribution)
+
+
+case2: when to move end: always == i
+
+How to update solu_start and solu_end???
+When the global_max is updated
+
+
+
+Q2 dictionary word problem
+
+Given a word, can it be composed by concatenating words from a given dictionary? Example:
+Dictionary:
+bob
+cat
+rob
+
+Word1: bcoabt
+Solution: False
+
+Word2: bobcatrob
+Solution: True
+
+Solution:
+	1. Base case: 
+	2. Induction rule
+
+
+
+Example input is Word2: bobcatrob
+
+0 letter false
+
+size = 1  M[1] = false
+1 letter 'b'    obcatrob
+Q: how can we tell whether b can be formed by the word in the dictionary???
+A: just manual check against the hashSet, which stores the dictionary.
+
+***hashSet: we need to maintance a hashSet that contain all the words in the dictionary***
+
+size = 2  M[2] = false
+2 letter 'bo'    bcatrob
+Q: how can we tell whether b can be formed by the word in the dictionary???
+A: there are 2 cases, where we can make the cut to 'bo' 
+case0: no cut
+bo
+manual check whether 'bo' is in the dictionary or not -> false
+
+case1: b | o -> false && false -> false
+左大段 = b 
+	 whose result can be read from the table
+	 that is M[1] 
+右小段 = o
+	 manually check whether the word 'o' is in the dictionary or not
+
+because all the result are false, thus 'bo' is false  
+
+
+size = 3  M[3] = true
+2 letter 'bob'    catrob
+Q: How can we tell whether b can be formed by the word in the dicionary???
+A: there are 3 cases, we could cut
+case0: no cut -> true
+bob
+manual check whether 'bo' is in the dictionary or not -> false
+
+case1: b | ob    -> false && false -> false
+右大段 = b
+	 which can be read from the table that is M[1] = false
+
+右小段 = ob
+	 manually check whether the word 'ob' is in the dictionary or not
+
+case2: bo | b    -> false && fase -> false
+左大段 = bo
+	 which can be read from the table that is M[2]
+
+右小段 = b 
+	 manually check whether the word 'b' is in the dictionary or not
+
+M[3] = (case0 || case1 || case2) = true || false || false = true
+
+
+size == 4 M[4]
+Q: How can we tell whether b can be formed by the word in the dicionary???
+A: there are 4 cases, we could cut
+case0: no cut
+bobc
+manual check
+false && false -> false
+
+case1: b | obc -> false
+左 read from  -> false
+右 manual check  -> false
+fasle && false -> false
+
+case2: bo | bc
+左 read from  -> false
+右 manual check -> false
+false && false -> false
+
+case3:
+左 read from -> true
+右 manual check -> false
+true && false -> false
+
+M[4] = false || false || false || false = false
+
+solution:
+public boolean wordSolver(String word, HashSet<String> dict) {
+	boolean[] M = new boolean[word.length() + 1]; // include 0
+	for (int i = 1; i <= word.length(); i++) { // grow letters one by one
+		// if the word is in the dictuonary, done
+		if (dict.contains(word.subString(0, i))) {
+			M[i] = true;   // case 0 if NO cut
+			continue;
+		}
+	
+		// otherwise, check the possible single splits
+		for (int j = 1; j < i; j++) { // cut left part
+			// check subproblem and check the rest of the word
+			if (M[j]) && dict.contains(word.subString(j,i)) {
+				M[i] = true;
+				break;
+			}		
+		}
+	}
+	return M[word.length()];
+}
+
+leetcode 364 nested list, integar
+
+
+2 for loops, n^2; *** subString method ***, another O(n) n^3 
+Time = O(n^3)
+
+Q.3 Edit Distance
+Given two strings of alphanumeric characters, determine the minimum number of Replace, Delete, and Insert operations needed to transform one string into the other.
+
+Example:
+s1 = 'asdf'
+s2 = 'sghj'
+
+s1 == c1 | s1r   <- rest of s1
+s2 == c2 | s2r   <- rest of s2
+
+Example:
+s1 = a | sdf
+s2 = s | ghj
+
+Firstly, edit the c1,c2 part
+
+Secondly, put the s1r,s2r parts into the new editDistance function
+
+Example:
+s1 = a | sdf
+s2 = s | ghj
+
+(1) replace: a->s
+s sdf
+s ghj
+editDistanc(sdf, ghj) + 1
+
+
+(2) Delete:
+a(X) sdf
+     sghj
+editDistance(sdf,sghj) + 1
+
+(3) Insert:
+s asdf
+s ghj
+editDistance(asdf, ghj) + 1
+ 
+solution 1: recursion
+
+public int editDistance(String word1, String word2) {
+	// Base case
+	if (word1.isEmpty()) return word2.length();
+	if (word2.isEmpty()) return word1.length();
+
+	// (a) check what the distance is if the characters[0] are 
+	// identical and we do nothing first
+	int nothing = Integer.MAX_VALUE;
+	if (word1.charAt(0) == word2.charAt(0))	
+		nothing = editDistance(word1.subString(1),
+				       word2.subString(1))
+	}
+
+	// (b) Check what the distance is if we do a replace first?
+	int replace = 1 + editDistance(word1.subString(1),
+				       word2.subString(1));
+	// (c) Check what the distance is if we do a Delete first?
+	int delete = 1 + editDistance(word1.subString(1),word2);
+	// (d) Check what the distance is if we do a Insert first?
+	int insert = 1 + editDistance(word1, word2.subString(1));
+
+	// return best solution
+	return min(noting, replace, delte, insert);
+
+}
+
+Recursion tree: there are 2n levels in the recursion tree
+Time = O(4^2n)
+
+不使用substring，改用index
+
+M2: DP
+s1 = xx...xx +     "a"
+s2 = yyy...yyyyy + "s"
+
+
+c1 is the last letter of the string s1
+c2 is the last letter of the string s2
+
+
+s1 = s1r + c1 = empty + "a"
+s2 = s2r + c2 = empty + "s"
+
+只考虑一个letter
+s1 = "a"
+s2 = "s"
+
+Case 1. do nothing does not apply here, since s1[0] != s2[0]
+
+Case 2. replace c1 with c2: distance(s1r + c1, s2r + c2) = 1 + distance(s1r, s2r)
+editDistance(1,1) -> 1 + editDistance(0,0)
+
+Case 3. delete c1: distance(s1r + c1, s2r + c2) = 1 + distance(s1r, s2)
+editDistance(1,1) -> 1 + editDistance(0,1)
+
+Case 4. Insert a new char (c2) to the right side of c1: 
+distance(s1 + c2, s2r + c2) = 1 + distance(s1, s2r)
+
+generalized: 
+s1 = xx...xx +     "a"   size = i
+s2 = yyy...yyyyy + "s"   size = j
+
+we grow the string from the left hand side to the right hand side ====>
+
+s1.length = i
+s2.length = j
+how many possible pairs of <i,j>
+
+M[i][j] represents the minimum number of actions to transform substring (the first i letters of s1 to the first j letters of s2)
+
+s1 = "a"
+
+Case 1. do nothing does not apply here, since s1[0] != s2[0]
+
+Case 2. replace c1 with c2: distance(s1r + c1, s2r + c2) = 1 + distance(s1r, s2r)
+editDistance(1,1) -> 1 + editDistance(0,0)
+
+generalized to 
+editDistance(i,j) -> 1 + editDistance(i-1,j-1)
+
+Case 3. delete c1: distance(s1r + c1, s2r + c2) = 1 + distance(s1r, s2)
+editDistance(1,1) -> 1 + editDistance(0,1)
+
+generalized to
+editDistance(i,j) -> 1 + editDistance(i-1,j)
+
+Case 4. Insert a new char (c2) to the right side of c1:  distance(s1 + c2, s2r + c2) = 1 + distance(s1, s2r)
+editDistance(1,1) -> 1 + editDistance(1,0)
+
+generalized to
+editDistance(i,j) -> 1 + editDistance(i,j-1)
+
+s1: first i letters -> how to convert to
+s2: first j letters
+
+M[i][j]: s1 的 first i letters 怎么变成 s2 的 first j letters
+
+     	    	    case1: M[i-1][j-1]  		if s1[i-1] == s2[i-1]
+
+			                        otherwise
+M[i][j] =       min(case2: 1 + M[i-1][j-1]          // replace
+
+		    case3: 1 + M[i-1][j]            // delete
+	
+		    case4: 1 + M[i][j-1])            // insert
+
+
+How to fill in the 2D M[i][j] matrix?
+
+A-- in order to fill in a value M[i][j], we must know the value to (1) my top-left position,
+(2) upper value, (3) left value. Therefore, we should fill the 2D matrix from top-down, and 
+from left to right
+
+为什么多一行，因为有一行对应Java里面的index从零开始
+       s2 s g h j
+  size  0 1 2 3 4     
+  s1 0  0 1 2 3 4
+   a 1  1 1 2 3 4
+   s 2  2 1 2 3 4
+   d 3  3 2 2 3 4
+   f 4  4 3 3 3 4
+
+最后返回4
+
+Time = O(m * n)
+Space = O(m * n) -> optimize to O(2n) (因为每一次只需要保存current row 和 previous row 对比)
+
+
+
+
+Q4. Largest square of 1's in a binary matrix
+What's the edge length of the largest square of 1's in a given binary matrix.
+
+In this case, your solution should return 3(3 * 3 square)
+
+	0 0 0 0 0 
+	1 1 1 1 0
+	1 1 1 1 0
+	1 1 1 0 0
+	1 1 1 0 0
+
+	n * n 里面有多少个 square
+	O(n^3)
+	why?
+	each node has n freedom level, 1,2,3,4,5....n, and we have n^2 node, so total number of possible square is O(n^3)
+
+Primitive way (Solution1):
+1. O(n^3 * n^2) = O(n^5) 每check一个正方形的worst case 是 n^2 i.e., O(n^2)，所以总共是O(n^5)
+
+
+Solution2
+
+Size = 1
+1
+
+Size = 2   2:02:00开始
+1 1
+1 1
+
+对于右下角的1，如果其左侧，上方，左上方都可以形成level为1的正方形，则右下角的1就可以形成level为2的正方形
+
+Size = 3
+1 1 1
+1 1 1
+1 1 1
+
+对于右下角的1，如果其左侧，上方，左上方都可以形成level为2的正方形，则右下角的1就可以形成level为3的正方形
+
+......
+
+对于右下角的1，如果其左侧，上方，左上方都可以形成level为n-1的正方形，则右下角的1就可以形成level为n的正方形
+
+subproblem: M[i][j]: represents the max size of square with the coordinate[i][j] as its bottom right corner.
+
+	M[i][j] = 0                                           if A[i][j] == 0
+                = 1 + min(M[i-1][j-1], M[i][j-1],M[i-1][j])   otherwise
+
+
+dp2_squares.png
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,417 @@
+L.13 Dynamic Programming I
+
+Fibonacci:
+F(n) = F(n-1) + F(n-2)
+
+Base case:
+F(0) = 0
+F(1) = 1
+F(2) = 1
+
+Naive solution:
+Go from Fn down recursively until base cases are reached
+
+		   Fn
+	Fn - 1      	Fn - 2
+     Fn-2    Fn-3     Fn-3   Fn-4
+
+why O(2^n)?
+有重复
+
+DP 解题的方式就是如何定义表格里每个element的意义，以及吧表格里的 value 填满
+index| 0 1 2 3 4 5 ... 1000
+F(n) | 0 1 1 2 3 5 ... ?
+
+空间换时间（dynamic programming 的 high level 理解） 
+
+public int fibN(int n) {
+	int [] fitsFound = new int[n+1]; //sub-solutions
+	fibsFound[0] = 0; // base case
+	fibsFound[1] = 1;
+	
+	for (int i = 2; i <= n; i++) {
+		fibsFound[i] = fibsFound[i-1] + fibsFound[i-2];
+		// fib[2] => f[0] + f[1]
+		// fib[3] => f[1] + f[2]
+		...
+	}
+	return fibsFound[n];
+}
+
+O(n)
+
+DP 的核心思想类似与高中学习的数学归纳法：
+1. 把一个大问题（size == n）的解决方法用比他小的问题来解决，也就是思考从问题size = n - 1增加到size = n的时候，如何用小问题的solution构建大问题的solution
+
+2. 与recursion的关系：
+  2.1 recursion 从大到小解决问题，不记录任何sub solution只要考虑
+     2.1.1 base case
+     2.1.2 recursive rule
+  2.2 DP 从小到大来解决问题，必须记录sub-solution
+     2.2.1 由size(<n) 的subsolution(s) -> size (n)
+     2.2.2 base case
+     2.2.3 induction rule
+
+reverse linkedlist，recursion解决，DP无法解决
+DP通常是解决与值有关的问题
+
+DP的解题常用方法：
+1. 一维的original data (such as a rope, a word, a piece of wood), 求MAX or MIN(cut, merge, etc.)
+  1.1 if the ***weight*** of each smallest element in the original data is *** identical / similar ***
+     1.1.1 e.g. identical: 1 meter of rope
+     1.1.2 e.g. similar:  a letter, a number
+
+	Then this kind of problem is usually simple:
+	Linear scan and look back to the previous element(s) (e.g. fibonacii)
+
+	
+	For example:
+		Longest Ascending Subarray
+		...               Subsequence
+		Maximal Product when Cutting Rope
+		cut palindrome
+  1.2 if the ***weight*** are not the same:
+     1.2.1 e.g. DP1 课后题 砂子归并
+     1.2.2 e.g. 强化习题 切木头
+
+Q1 Longest Ascending Subarray
+Given an unsorted array, find the length of the longest subarray in which the numbers are
+in ascending order. For example: If the input array is {7,2,3,1,5,8,9,6}, the subarray with the 
+most number in ascending order is {1,5,8,9} and the expected output is 4.
+
+Concept: for {7,2,3,1,5,8,9,6}
+Sub-array: contiguous elements in an array e.g.{1,5,8,9}
+Sub-sequence: not neccessarily contiguous, (can jump). e.g. 2 .. 5 .. 6
+
+Solution:
+最小号问题，长度为1
+input = {7}
+M[i] = 1
+
+其次，长度为2
+如果
+input = {7, 12}
+M[i] =   1  2
+但本题
+input = {7, 2}
+M[i] =   1  1
+
+  1. base case M[0] = 1, because there is only one element as the based case
+  2. induction rule: M[i] represents what ???????
+     [from the 0-th element to the i-th element], the longest ascending subarray, (*** including the i-th element ***)
+
+input = {7, 2, 3}
+M[i] =   1  1, 2
+
+input = {7, 2, 3, 1, 5, 8, 9, 6}
+M[i] =   1  1  2  1  2  3  4  1
+
+int global_max = 4 
+
+ 1. base case M[0] = 1
+ 2. induction rule M[i] = M[i-1] + 1      if input[i-1] < input[i]
+                          1               else 1
+
+面试时dp必须要先分析，写出base case 和 induction rule
+
+Q2. Maximal Product when Cutting Rope
+Given a rope with integer-length n, how to cut the ropt into m integer-length parts
+with length p[0], p[1], ... p[m-1], in order to get the maximal product of p[0]*p[1]*...*p[m-1]?
+m is determined by you and must be greater than 0 (at least one cut must be made)
+
+*** maximal (与数量，最优解有关，考虑dp)
+
+solution1 (左大段，右大段):
+大段的意思是，我们需要通过读取表格，获取M[left] 和M[right] 的值。
+
+rope length: the length of rope; 
+M[i]: the maximal product of the cutting parts (at least 1)
+
+Smallest ropt?????
+base case:
+rope length = 1m 	    _
+M[1]=??? // invalid input
+
+incuction rule:
+1) rope	length = 2m 
+	only one way to cut
+_|_ left = 1m, right = 1m;   
+M[2] = 1 = M[1] * M[1] = 1    // the true answer is M[2] = max(1, M[1]) * max(1, M[1])
+
+2) rope	length = 3m
+	three ways to cut   
+case1:
+_|_ _	right = 1m	left = 2m
+
+***
+M[3] = M[1] * M[2] = 1 * 1 = 1 (wrong! why?)
+because M[2] at least has one cut! 
+we need to consider 0 cut case for the previous status 
+(i.e. the total length of the previous rope).
+***
+
+for the case1: 
+M[2] = max(1, M[1]) * max(1, M[1])
+
+Thus, the M[3] is
+M[3] = max(1, M[1]) * max(2, M[2]) = 1 * 2 = 2
+
+case2
+_ _|_	right = 2m	left = 1m
+M[3]=2
+
+M[3] = max(2, M[2]) * max(1, M[1]) = 2 * 1 = 2
+
+case3 (??? need we consider with that ???)
+_ | _ | _	1m; 1m; 1m
+
+M[3] = max(1, M[1]) * max(1, M[1]) * max(1, M[1]) = 1
+
+M[3] = max(case1, case2) = 2
+
+***
+Because we have already store the '1)' condition into the max(2, M[2]),
+the maximimal has already been calculated before,
+So we need not worry about that
+
+DP get every sub-problem's best solution, and the size of the sub-problem is bigger and bigger
+
+In this problem, we need only consider add one cut to the rope, because every sub-problem of the two parts is already optimized.
+***
+
+3) rope length = 4m
+
+case1
+_ | _ _ _
+M[4] = max(1, M[1]) * max(3, M[3]) = 3
+
+case2
+_ _ | _ _
+M[4] = max(1, M[1]) * max(3, M[3]) = 3
+
+case3 (case3 同样可以不考虑，因为与case1对称，结果一样)
+_ _ _ | _
+M[4] = max(1, M[1]) * max(3, M[3]) = 3
+
+M[4] = max(case1, case2, case3) = 4
+
+.
+.
+.
+
+rope length = 10m
+
+public int cutRod(int n) {
+	int [] M = new int[n + 1];
+	M[0] = 0;
+	M[1] = 0;
+	for (int i = 1; i <= n; i++) {
+		int curMax = 0;
+		for (int j = 1; j <= i/2; j++) {
+			curMax = Max.max(curMax, Math.max(j, M[j]) * Math.max(i - j), M[i - j]));
+		}
+		M[i] = curMax;
+	}
+	return M[n];
+}
+
+Time = O(n^2)
+Space = n
+
+Solution2 (左大段 + 右小段)
+
+大段的意思是说，我们需要通过读取表格，获取M[left]的数值，
+小段的意思是说，我们不需要通过读取表格，而是不需要再做任何cut，自成一段绳子
+
+10m
+
+—— —— —— —— —— —— —— —— —— | —— case1(右小段=1m)
+—— —— —— —— —— —— —— —— | —— —— case2(右小段=2m)
+—— —— —— —— —— —— —— | —— —— —— case3(右小段=3m)
+.
+.
+.
+—— | —— —— —— —— —— —— —— —— —— case9(右小段 = 9m)
+
+最右侧，cut完之后，那段绳子的长度，由几种可能性？
+
+input = 1m 2m 3m 4m ... 10m
+M[i] = 1 1 2 ....
+
+size = 1m
+——	M[1] = 1 or 0   
+
+size = 2m
+_ _	
+case1: 左大段=1m 右小段=1m
+_ | _
+M[2] = max(1,M[1]) * 1 = 1
+
+size = 3m
+_ _ _
+case1:	左大段=1m 右小段=2m
+_ | _ _
+M[3] = max(1, M[1]) * 2 = 1 * 2 = 2
+
+case2:	左大段=2m 右小段=1m
+_ _ | _
+M[3] = max(2, M[2]) * 1 = 2 * 1 = 2
+
+M[3] = max(case1, case2) = 2
+
+size = 4m
+_ _ _ _
+case1: _ | _ _ _
+M[4] = max(1,max[1]) * 3 = 1 * 3 = 3
+
+case2: _ _ | _ _
+M[4] = max(2,max[2]) * 2 = 2 * 2 = 4
+
+case3: _ _ _ | _
+M[4] = max(3,max[3]) * 1 = 3 * 1 = 3
+
+M[4] = max(case1, case2, case3) = 4
+
+...
+
+***
+DP solution2 (左大段 + 右小段 思想)is more preferrable to solve a problem (more general) 
+			           M[i-x] tells you the optimal solution
+***
+
+
+
+Solution3 (Non DP, use recursion)
+
+1. Base case size = 1m
+2. Recursion rule: Product[i] = ?????
+
+*** 讲code 先将signiture ***
+
+public int getMaxProduct(int n) {
+	if (n <= 1) {
+		return 0;
+	}
+	int maxProduct = 0;
+	for (int i = 1; i < n; i++) { // i = meters of rope as 右小段
+		int best = Math.max(n - i, getMaxProduct(n - i));
+			// (no cut) rope remains, cut == subproblem
+		maxProduct = Math.max(maxProduct, i * best);
+	}
+	return maxProduct;
+}
+
+O(n^n)
+
+左大段右小段的优点是什么：
+Dictionary Problem:
+Given a word, can it be composed by concatenating words from a given dictionary?
+Example:
+Dictionary:
+bob
+cat
+rob
+
+word1: bocoabt
+solution:False
+
+word2: bobcatrob
+solution:True
+
+word3: bobbob
+solution: True
+
+如果是左大段右大段
+b o b c a t r o b
+
+b                   false
+b o                 false
+b o b               true
+b o b c             false
+b o b c a           false
+
+b o b c a | t r o b  ???
+右大段不在前面储存的各种情况中，所以无法使用左大段，右大段
+
+前面三道题：
+fibo 像前面看2个
+subarray 向前面看1个（是否增加）
+cut rope 看前面所有的情况
+
+Q3. Jump Game
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+Each element in the array represents your maximum jump length at that position
+Determine if you are able to reach the last index.
+
+For example:
+index 0 1 2 3 4
+A = [2,3,1,1,4] return true
+B = [3,2,1,0,4] return false
+
+A = [2,3,1,1,4]
+
+4
+T
+
+1,4
+T,T
+
+1,1,4
+T,T,T
+
+3,1,1,4
+T,T,T,T
+
+2,3,1,1,4
+T,T,T,T,T
+
+只要前面一个数字的状态是true，这个数字的状态也是true
+
+从左往右看
+
+Solution (DP)
+	1. Base case M[n-1] = true
+	2. induction rule: M[I] represents what whether or not we can jump to the target from the i-th index.
+		a. M[i] = true 		iff. there is an element j where j <= i + input[i], and M[j] = true
+	            	  false 	otherwise
+ 
+O(n^2) -> O(n*k) where k is the min(n, largest value in the array)
+
+
+
+*** 不要试图用数学方法去解决或者简化问题 *** 
+
+
+
+
+Q&A
+
+Q.2 solution 3: recursion, why O(n) = n!
+
+			n                        n = 10
+		/////       \\\\\ 
+               .....         .....               branch = 10
+
+
+O(n^n)
+
+			n                        n = 10
+		/////       \\\\\ 
+               .....         .....               branch = n-1
+						 branch = n-2
+						 ...
+						 branch = 1
+
+
+O(n!)
+
+			n-1
+              /  /  /  /  /  /  /  /  /  /  / \  \  \  \  \  \  \  \  \  \  \  \  \  \
+	getMaxProduct(n-1)  getMaxProduct(n-2)...                       	getMaxProduct(1)
+           n-2                n-3                                                 1
+
+
+树的叉数小于前一棵树，所以最大为N！
+
+
+

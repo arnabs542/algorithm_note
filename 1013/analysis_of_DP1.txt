@@ -1,0 +1,49 @@
+Q1.
+leetcode 674
+base case: 
+n = 1, 
+global max = 1
+current = 1
+
+induction rule: 
+n = 2, 
+global max = 1     
+current = current + 1       if array[1] > array[0]
+          1                 otherwise
+
+global max = current        if current > global max
+	     global max     otherwise
+				  
+
+n = 3, global max
+current = current + 1       if array[2] > array[1]
+          1                 otherwise
+
+global max = current        if current > global max
+	     global max     otherwise
+
+
+follow-up			  
+leetcode300
+
+[10,9,2,5,3,7,101,18]
+
+previous num: store latest largest
+previous posi: store the index of the latest largest
+solu: store every position answer
+
+base case:
+n = 1
+max(solu)
+
+previous num: 10
+previous posi: 0
+solu: [1, 1 , 1 , 1 , 1 , 1 , 1 , 1]
+
+induction rule:
+
+
+
+
+
+

@@ -21,10 +21,11 @@ Q1.1 a^b a power b
 3. 0^0
 
 public long power(double a, double b) {
-	if (a == 0 & b == 0) {
+	if (a == 0 & b <= 0) {
 		return -1;
 	} else if (b < 0) {
-	
+		return 1 / (double) pow (a,b); 
+	} else (double) pow(a,b)
 	}
 	
 }
@@ -32,7 +33,7 @@ public long power(double a, double b) {
 // helper function
 public long pow(double a, double b) {
 	if (b == 0) {
-		return 1;
+		return -1;
 	}
 
 	int half_result = pow(a, b/2);
@@ -43,8 +44,461 @@ public long pow(double a, double b) {
 	}
 }
 
+* 主逻辑嵌套在hyper function里面，不同情况放在主函数里面
 
-17:27
+* 与数学计算结合，考虑怎么将大的问题转变成小的问题，可能是折半，折倍数，减1，，，，，，
+
+2. recursion 与 1D or 2D array 的结合
+	1. 1D array 二分法比较常见
+	1.1 MergeSort (二分)
+	1.2 QuickSort (pivot，不均分二分)
+	
+	2. 2D array
+2.1 逐层(row by row) 递归： 8 queen -> n queen
+
+	N queen problem
+
+	怎么放到棋盘中，所有的queen都不互相影响到
+	
+	recursive rule: for the i-th queen on the i-th row, we must make sure the Qi does not confilict with all previous queens that have been placed on the board. 
+
+	int Position[N] = {1 3 2 5 1  }
+	                   q1 所在的列（q1 一定在第一行）
+			   q2 所在的列（q2一定在第二行）
+			   ......
+	
+	int Position[N] = {}
+	
+	E.G. N = 8
+	tree
+	
+		   		       ROOT
+		/      /      /      /      \      \      \      \
+
+level0	Q0 is put on 0-th column; 1-th; 2-th; ... 7-th
+
+         / / / / \ \ \ \
+
+level1  given Q0 position, Q1 is put on ?th 
+
+	......
+
+Time = O(8^8) -> O(8!)
+
+Base case: The last row is done, 0 row left
+recursive rule: if position(i,j) valid -> go to the next row: (i + 1)
+
+
+//	int Position[N] = {1 3 2 5 1  }
+//	                   q1 所在的列（q1 一定在第一行）
+//			   q2 所在的列（q2一定在第二行）
+//			   ......
+
+// n叉树
+
+void EightQueen() {
+	if (current_row == N) {
+		// print A[N]
+	}
+	for (int i = 0; i < N; i++) {
+		A[current_row] = i;
+		if (pass the check) {
+			EightQueen(A, current_row + 1);
+		}
+	}
+}
+
+
+Q2.2 How to print 2D array in spiral order (N * N)
+
+void sprialprint(int [][] a, int offset = 1; int size = 3, int counter) {
+	if (size <= 1)
+		print matrix // base case
+	for (i = 0; i < size - 1; i++) {
+		a[0 + offset][i + offset] = counter++; // offset is the [x] and [y] coordinates of the upper-left corner of the box
+	}
+	for (i = 0; i < size - 1; i++){}
+	for  // bottom row (from right to left)
+	for  // left column
+
+	// recursive rule
+	spiralprint(a, offset + 1, size - 2, counter);
+}
+
+
+3 recursion 与 linkedlist 的结合
+
+3.1 reverse linked list
+
+3.2 reverse a linked list (pair by pair)
+
+example 1->2->3->4->5->null
+
+output: 2->1->4->3->5
+
+public Node reverse(Node cur) {
+	// base case
+	if (cur == None | cur.next == None) {
+		return cur;
+	}
+	
+	// recursive rule
+	new_head = reverse(cur.next.next);
+	temp = cur.next
+	temp.next = cur
+	cur.next = new_head
+	return temp
+}
+
+	
+4. recursion 与 string 的结合
+Q4.1 reverse a string using recursion
+
+abcd -> dcba
+
+a bxxxxxxc d
+  ________
+
+
+finished
+
+不全
+recursion 解决 I LOVE YAHOO
+
+Q4.2 A word such as "book" can be abbreviated to 4, 1o1k, b3, b2k, etc. Given a string and an abbreviation return if the string matches the abbreviation. Assume the original string only contains alphabetic characters. For example: "s11d" matches "sophisticated"
+
+4：book有四个字母，走完用四次
+1o1k：第一次走一格，然后走一个o，然后再走一个，最后再走一个k
+......
+
+讲解一个函数先讲 signiture，（input 和 output）
+
+Solution 1:
+bool isDigit(char input) {
+	return input >= '0' && input <= '9';
+}
+
+bool AbbrevMatch (string s1, string s2) {
+	if (s1.size == 0) && (s2.size == 0) {
+		return true;
+	}
+//	if (s1.size == 0 && s2.size != 0) ||
+//	   (s1.size != 0 && s2.size == 0) {
+//		return false;
+//	}
+
+	else if (s1.size() == 0) && (s2.size() == 0) {
+		return false;
+	}
+
+	if (isDigit(s2.at(0))) {
+		int i = 0;
+		int num = 0;
+		while (i < s2.size() && isDigit(s2.at(i))) { // case1: s2.at(0) is a digit
+			num = num * 10;
+			i ++;
+		}
+		if (num > s1.size()) {
+			return false
+		} else {
+			return AbbrevMatch(s1.substr(num), s2.substr(i));
+		}
+	} else { // case2: s2.at(0) is not a digit
+		if (s1.at(0) != s2.(0)) {
+			return false;
+		} else {
+			return AbbrevMatch(s1.substr(1), s2.substr(1))
+		}
+	}
+}
+缺点：在recursion中调用 substring 函数，时间复杂度为n^2
+
+Solution1 IMPROVEMENT: USE INDEX INSTEAD OF FUNCTION *****，recursion 添加两个参数 s1 start, s2 start
+bool isDigit(char input) {
+	return input >= '0' && input <= '9';
+}
+
+bool AbbrevMatch (string s1, string s2, int s1_start, int s2_start) {
+	if (s1.size == 0) && (s2.size == 0) {
+		return true;
+	}
+//	if (s1.size == 0 && s2.size != 0) ||
+//	   (s1.size != 0 && s2.size == 0) {
+//		return false;
+//	}
+
+	else if (s1.size() == 0) && (s2.size() == 0) {
+		return false;
+	}
+
+	if (isDigit(s2.at(0))) {
+		int i = 0;
+		int num = 0;
+		while (i < s2.size() && isDigit(s2.at(i))) { // case1: s2.at(0) is a digit
+			num = num * 10;
+			i ++;
+		}
+		if (num > s1.size()) {
+			return false
+		} else {
+			return AbbrevMatch(s1.substr(num), s2.substr(i));
+		}
+	} else { // case2: s2.at(0) is not a digit
+		if (s1.at(0) != s2.(0)) {
+			return false;
+		} else {
+			return AbbrevMatch(s1.substr(1), s2.substr(1))
+		}
+	}
+}
+
+5. Recursion 与 Tree 的结合
+Binary tree 往往是最常见的和recursion结合最紧密的面试题目类型
+reasons：
+	* 每层的node具备的性质，传递的值和下一层的性质往往一致。比较容易定义
+	recursive rule
+	* Base case(generally): null pointer under the leaf node
+	* Example1: int getHeight(Node root)
+	* Example2: 统计tree里面有多少个node
+
+	见照片
+
+	黑色箭头向下压，红色箭头触底反弹。
+	将左右两个节点看成两棵子树，哪一棵返回的高度最大，那么这两棵树的父节点的高度就为其两棵子树最大的高度加一。
+
+5.1 Tree + Recursion 第一类问题：从下往上返回值(int, bool, etc.)
+Q5.1.1(从下往上返回值) Review
+
+int getHeight (Node root) {
+	if (root == null)
+		return 0;
+	int left = getHeight(root.left);
+	int right = getHeight(root.right);
+	return Math.max(left,right) + 1
+}
+
+Q5.1.2 How to store how many nodes in each node's left-subtree?
+
+
+class TreeNode {
+	TreeNode left;
+	TreeNode right;
+	int value;
+	int total_left
+}
+
+Way of thinking (Tricks)
+1. What do you except from your left child/ right child? 
+	(usually it's the return type of the recursion function)
+	total number of nodes in left child tree (1)
+	total number of nodes in right child tree (2)
+
+2. What do you want to do within the current layer?
+	store (1) in current node -> left child number
+
+3. What do you want to report to your parent (same as Q1 == Q3)
+	total number of nodes in left child tree (1)
+	total number of nodes in right child tree (2)
+	add (1) and (2)， and add 1
+	*** 所以与第一步请求的物理意义一样 ***	 都是左右的node数字
+
+write the code ***
+
+Q5.1.3 (从下往上返回值) Find the node with the max difference in the total number of descendents in its left subtree and right subtree
+                        找到一个node，其左子树右子树node数量的差值最大
+1. What do you except from your left child/ right child? 
+	left: total number of descendants in my left subtree
+	right: total number of descendants in my left subtree
+2. What do you want to do within the current layer?
+	calculate the diff = Math.abs(left-right), and compare the diff with global_diff
+	and update the global_diff is feasible (update solution as well).
+3. What do you want to report to your parent (same as Q1 == Q3)
+	return 1 + left + right
+	*** 所以与第一步请求的物理意义一样 ***	 都是左右的node数字
+
+			root(0)
+	500				500
+
+// key problem: How to define the signature?
+// When we need to maintain a global max/min variable, then put it in the input argument list
+
+int maxDiffNode(TreeNode* root, int& global_max, TreeNode*& solu) {
+	if (root = nullptr) return 0;
+	
+	int left_total = maxDiffNode(root->left, global_max, solu);
+	int right_total = maxDiffNode(root->right, global_max, solu);
+	// step 1 is done
+
+	// step 2: current level:
+	if (abs(left_total - right_total) > global_max) {
+		global_max = abs(left_total - right_total);
+		solu = root;
+	}
+	
+	// step3
+	return left_total + right_total + 1;
+}
+
+
+
+视频
+1:40:19
+
+Q5.1.4 Lowest Common Ancestor (LCA)
+	最底层的共同的祖先（parent）	
+
+		15
+             /      
+	   12       
+         /     \
+      10        15
+    /   \      /    \
+   5(a)    null  -17
+ /    \
+2(a')  7
+     /    \
+    null  9(b)
+
+solution1:
+
+a : 15 12 10 5
+b : 15 12 10 5 7 9
+
+
+a: 15 12 10 5 2
+b: 15 12 10 5 7 9
+
+将前面一个parent存到list里面
+看两个list，
+从左到右，第一个分叉是最底层共同祖先
+
+solution2: (recursion)
+
+	      15
+             /      
+	   12       
+         /     \
+      10        15
+    /   \      /    \
+   5    6   null  -17
+ /    \
+2(a)   7
+     /    \
+    null  9(b)
+
+case1: if a is NOT the ancestor of b (a 和 b 不直接隶属)
+	1.1 if left subtree returns NULL and right subtree returns return NULL return NULL
+	1.2 if left subtree AND right subtree return NOT NULL, return c
+	1.3 either left of right returns NOT null, return not NULL
+
+	       15
+             /5   \n   
+	   12      null  
+         /5    \n
+      10        15
+    /5  \n     /n  \n
+   5    6   null  -17
+ /2   \9
+2(a)   7
+     /n   \9
+    null  9(b)
+
+返回 5
+
+过程：
+在5以下，
+9 返回到7（因为左右都为null），9再返回到5（因为7的左侧是null）。
+2 返回到5（因为两侧都为null）。
+5返回到10（因为左右都有值），5返回到12（因为右侧为空，左侧为5），5返回到15（root）（右侧为空，左侧为5）。
+5返回为结果。
+
+case2: if a is the ancestor of b (a 和 b 直接隶属)
+	1.1 if left subtree returns NULL and right subtree returns return NULL return NULL
+	1.2 if left subtree AND right subtree return NOT NULL, return c
+	1.3 either left of right returns NOT null, return not NULL
+*** exactly same *** with case 1
+
+Code
+
+public Node LowestCommon(Node root, Node a, Node b) {
+	if (root == null || root == a || root == b) {
+		return root;
+	}
+
+	// step1 ask for a value from my left and right, respectively
+	Node leftnode = lowestCommon(root.left, a, b);
+	Node rightnode = lowestCommon(root.right, a, b);
+
+	// step 2 + 3 what should we do in the current level
+	if (leftnode != null && rightnode != null) {
+		return root;
+	}
+	else if (leftnode == null && rightnode == null) {
+		return null;
+	}
+	if (leftnode == null) {
+		return rightnode;
+	}
+	if (rightnode == null) {
+		return leftnode;
+	}
+}
+
+简写
+public Node LowestCommon(Node root, Node a, Node b) {
+	if (root == null || root == a || root == b) {
+		return root;
+	}
+
+	// step1 ask for a value from my left and right, respectively
+	Node leftnode = lowestCommon(root.left, a, b);
+	Node rightnode = lowestCommon(root.right, a, b);
+
+	// step 2 + 3 what should we do in the current level
+	if (leftnode != null && rightnode != null) {
+		return root;
+	}
+	return leftnode == null ? right : left;
+}
+
+
+Discussion:
+
+1 what if either a or b is not in the tree. Can this method take care of this case? A - It depends on your assumption.
+
+如果返回a，a在b的上面，或者b不在树里
+
+如果返回c，a，b都在树里面，而且互相不隶属
+
+2 Assuming that both a and b are in the tree
+
+a) case1: retult = c (c != a and c != b) it means a and b 不直接隶属
+b) case2a: result = a (a has a descendent which is b)
+c) case2b: result = b (b has a descendent which is a)
+
+follow up 1:
+what if either a or b might not be in the tree? add extra code to warning these cases (if not in tree, return null)
+case1: if return c, no worries, a and b must be in the tree
+case2: if return a, then we just run FINDNode(TreeNode a, TreeNode b) （a为root的树下是否有b）
+case3: if return b, then we just run FINDNode(TreeNode b, TreeNode a) （b为root的树下是否有a）
+
+
+... main() {
+	TreeNode solu = LowestCommon(root, a, b);
+	// what if either a or b might not be in the tree? 添加报错
+	if (solu == null) {
+		return null
+	} else if (solu != a && solu != b) {
+		return solu;
+	} else { // a and b 直接隶属；在solution 子树下，另一个值是否存在
+		if (solu == a) {
+			return LowestCommon(solu, b, b) == null ? null: solu;
+		}  else {
+			return LowestCommon(solu, a, a) == null ? null: solu;
+		}	
+	}
+}
+
 
 
 
