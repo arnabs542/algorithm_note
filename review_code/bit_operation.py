@@ -1,0 +1,1 @@
+# 342 50 ； use bit operation to solve power problems

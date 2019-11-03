@@ -197,3 +197,71 @@ print(S.getMaxProduct_m1(10))
 print(S.getMaxProduct_m1(12))
 print(S.getMaxProduct_m2(10))
 print(S.getMaxProduct_m3(10))
+
+class Solution152:
+    def maxProduct(self, nums):
+        max_ = 1
+        min_ = 1
+        ret = float('-inf')
+        for n in nums:
+            if n < 0:
+                temp = max_
+                max_ = min_
+                min_ = temp
+            max_ = max(max_*n, n) # if the number previous n is 0, then we will reset the max_, and begin a new loop
+            min_ = min(min_*n, n)
+            ret = max(max_, ret)
+        return ret
+
+class Solution53:
+    def maxSubArray(self, nums):
+        curl, curr = 0, 0
+        cur_sum = 0
+        global_max = float("-inf")
+        while curr < len(nums):
+            cur_sum += nums[curr]
+            if cur_sum > global_max:
+                global_max = cur_sum
+            curr += 1
+            if cur_sum < 0:
+                curl = curr
+                cur_sum = 0
+                
+        return global_max
+
+class Solution300:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if len(nums) <= 1: return len(nums)
+        
+        solu = [1 for i in range(len(nums))]
+        
+        for i in range(len(nums)):
+            for j in range(i+1):
+                if nums[j] < nums[i]: 
+                    # we need to check the nums[j] <? nums[i], if <, then consider update the solu[i]. But if solu[i] > nums[j] + 1 (previous loop could cause this), we need not update the solu[i]
+                    
+                    #solu[i] = solu[j] + 1     if solu[i] < solu[j] + 1
+                    #          solu[i]         otherwise
+                    solu[i] = max(solu[i], solu[j] + 1)
+        
+        return max(solu)
+                    
+# https://leetcode.com/problems/longest-increasing-subsequence/discuss/74836/My-easy-to-understand-O(n2)-solution-using-DP-with-video-explanation
+
+# nlogn solution (AND ALSO OTHER NORMAL DP SOLUTION
+# https://leetcode.com/problems/longest-increasing-subsequence/discuss/152065/Python-explain-the-O(nlogn)-solution-step-by-step
+
+# jump game 2 worked O n^2 solution
+class Solution45:
+    def jump(self, nums: List[int]) -> int:
+        cache = [float('inf') for i in range(len(nums))]
+        
+        cache[0] = 0
+        
+        for i in range(len(nums)):
+            for j in range(1, nums[i] + 1):
+                next_ind = min(i + j, len(nums) - 1) # what is the next index we could jump to
+                
+                cache[next_ind] = min(cache[next_ind], cache[i] + 1) # whether or not we will update the solu at the next_ind, if it's smaller, we need to update
+                
+        return cache[len(nums) - 1]
