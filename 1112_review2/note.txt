@@ -1,0 +1,376 @@
+class 23 加强练习2
+
+Q1: skiplist / graph copy problems
+
+Q1.1 copy a linked list with random pointer
+
+class Node {
+	int value,
+	Node* next,
+	Node* random
+}
+
+input:
+N1 -> N2 -> N3 -> N4 -> N5 -> NULL
+|     |     |                  |
+|-----|-----|                  |
+      |------------------------|
+
+output:
+N1' -> N2' -> N3' -> N4' -> N5' -> NULL
+|      |      |                    |
+|------|------|                    |
+       |---------------------------|
+
+
+可能会出现重复copy:
+e.g.
+复制N1 -> N1'
+复制N1.random -> N1'.random  得到一个N3'
+
+...
+
+复制N3 -> N3'  与前面的N3'重复
+
+solution：
+使用hashmap防止重复
+
+hash_map <key = original Node*, value = copied Node*>
+
+N1 : N1'
+N2 : N2'
+...
+
+唯一的难点，简历original node和copy node的一一对应关系，防止一个original node被重复copy一次以上
+
+每次复制的时候将original node 和 copy node 一一对应
+
+
+Q1.2 (Graph) How to copy a graph with possible cycles?
+
+Method: build a hash_map to avoid duplication when copying a node.
+
+Method 1: use BFS1
+
+  N1 - N2      N1' - N2'
+   \   /         \   /
+     N3            N3'
+
+step1: expanding N1: make a copy of N1.copy(N1, N1').insert<N1 -> N1'> into the hashmap.
+       generate N2: since N2 is not in the hashmap yet. new(N2').insert<N2 -> N2'> into the hashmap.
+       generate N3: since N3 is not in the hashmap yet. new(N3').insert<N3 -> N3'> into the hashmap.
+
+step2: expanding N2: make a copy of N2 ...
+       generate N3: since N3 is already in the hashmap, so we do not need to new N3'. We only need to find the 1:1 mapping between N3 and N3'
+
+step3: expanding N3:
+       generate nothing
+ 
+
+Method 2: use DFS
+
+*** 什么时候用DFS 什么时候用BFS ***
+当建立的树深度固定，但分叉不固定很多时，使用DFS
+当建立的树深度不确定非常多，而分叉固定时，使用BFS
+
+Q1.2_DFS.PNG
+
+# BASE CASE
+null
+如果已经在map里面直接返回
+
+# recursive rule
+copy每一个进入的node到字典中 
+
+for loop:
+对于当前该层的节点，将每一个neibour都进行复制（run recursion function），
+然后将copy的node放到当前层的copy的node的neibours里面
+
+难点1：hashmap去重
+难点2：
+	for (Node neighbor : input.neighbors) {
+		copyNode.neighbors.add(cloneGraph(neighbor, lookup));
+	}
+	是对于graph等deep copy类型问题特有的写法
+	*** 关键在于，传进去的是original node，添加的是copy node，进出都是node ***
+
+Q2 k-way merge problems:
+
+Q2.1 how to merge k sorted arrays into one big sorted array
+有什么可以问面试官的：升序降序，是否duplicate，是否inplace （linked list）
+assumption: all k arrays are sorted in ascending order
+
+general solutions for solving k-something problems.
+1. iterative way
+	A1 A2 -> A12
+           A3 -> A13
+                  A4 -> A14
+				kn
+				O(k^2 * n)
+2. binary reduction
+1
+2 12
+3     14
+4 34
+5        18
+6 56
+7     58
+8 78
+
+kn kn kn        log(k)层
+
+Time = O(k * n * log(k))
+
+space = O(kn)
+
+每个数组中的数字读写了log k次
+
+3. k pointers move the smallest one
+
+A1   xxxxxxxxxxxxxxx
+
+A2   yyyyyyyyyyyyyyy
+ 
+A3   zzzzzzzzzzzzzzz 
+
+使用一个min heap
+
+min_heap<List<val, idx_of_array, idx_in_array>>
+
+Time = O(k *n * log k)
+
+space = O(k)
+
+每个数组中的数字读写了1次
+
+所以3 优于 2
+
+Q3 Binary search tree
+
+Q3.1 find a node whose value is cloest to the target value
+Given a BST, how to find the node with its value cloest to a target value x?
+
+		10
+	   5         15
+        2     7   12()  20
+  
+target = 13  
+output = 12
+
+min_diff = |10 - 13| = 3
+...
+
+Solution:
+Maintain a solution node
+Starting from the root node as the current node
+Case 1: if (root == null) just return root
+Case 2: if (root.value < target) update the solution node if necessary, then walk right
+Case 3: if (root.value > target) update the solution node if necessary, then walk left.
+Case 4: if (root.value == target) just return root 
+
+
+Q3.2 
+Given a BST, hot to find the largest element in the tree that is smaller than a target number x.
+
+		10
+	   5         15
+        2     7   12()  20
+ 
+target = 13  
+output = 12
+
+Solution:
+Case 1: root.value >= target:
+	do not update the current solution
+	go to the left child
+Case 2: root.value < target:
+	update the current solution
+	go to the right child
+
+cur.value < target
+previous best < cur.value < target
+
+
+Q3.3
+How to remove a target node from BST?
+ 
+		10
+	   5         15
+        2     7   12    20
+		 /  \
+                11   13
+                    /  \
+                  12.5  14
+
+target = 12
+
+First, we need to find the target node
+
+public TreeNode delete(TreeNode root, int target)
+
+Case 1: if the node is the leaf node. Just delete this node
+
+Case 2: if the node has only one NON-null child. just delete this node and return its NON-null child
+
+Case 3: if the node has both left and right children.
+	step 1: Find the node with the smallest calue in the current node's right subtree
+	step 2: Copythe value 12.5 into 12 target
+	step 3: Recurse again to delete the node from the original target node's right subtree
+
+
+root.right = delete(root.right, target)
+和之前copyNode.neighbors.add(cloneGraph(neighbor, lookup)); 是一样的逻辑
+
+
+Q3.4 
+How to insert a target node to a BST
+
+*** We have to store the parent pointer ***
+
+Case 1: if curr == null: if target < parent.value, parent.left = target;
+			else parent.right = target;
+
+Case 2: if target > curr.value, parent = curr, curr = curr.right;
+
+Case 3: if target < curr.value, parent = curr, curr = curr.left;
+
+思考，how to use recursion to solve this problem
+
+
+1:44:32
+
+
+Q4 (DP 1D different weight for each smallest element)
+
+DP的解题常用方法
+
+1. 一维的 original data （such as rope，word，a piece of wood），求MAX or MIN （cut，merge，etc.）
+1.1 if the weight of each smallest element in the original data is identical/similar
+	1.1.1 e.g. identical: 1 meter of rope
+	1.1.2 e.g. similar: a letter, a number
+Then this kind of problem is usually simple;
+
+Linear scan and look back to the previous element(s)
+
+For example:
+Longest Ascending Subarray(when at i, look at i - 1)
+Longest Ascending Subsequence(when at i, look back at 1 ... i - 1)
+
+1.2 if the weight is not the same:
+	1.2.1 e.g. DP1 课后题：砂子归并
+	1.2.2 e.g.强化练习：切木头
+从中心开花，[index = 0, 1, 2, 3, N-1], for each M[i, j], we ususlly need to try out all possible k that (i < k < j), M[i, j] = max (M[i, k] +/-/* M(k, j)) (for all possible k) 
+
+2. (TODO: 稍微复杂) 二位的original data （such as two words 求 longest common substring：2D matrix 求最大sub-matrix 和最大）
+
+Q4.1 有一个长为L米的木材需要割开，需要切的位置在一个数组里 A[0...N], 从一个地方切开的cost 是当前所切木料的长度。按不同的顺序切割，得到的total cost是不一样的，问这怎么切cost 最小？
+比如一个木料现在10米长，然后切的位置是2米处，4米处，和7米处（就是说array A里A[1] 是2，A[2]是4，A[3]是7）。那么比如先切2米，那么得到的cost是10（因为现在木料的长度为10），然后切4米处，那么cost变成10 + 8 （因为8是现在切的时候木料的长度）。然后切7米处，cost变成10 + 8 + 6，那么这种切法总共的cost是24。
+
+0   1   2     3     4
+0 1 2 3 4 5 6 7 8 9 10
+|___|___|_____|_____|
+
+index 0 1 2 3 4
+A[5] = {0, 2, 4, 7, 10}
+
+Why 'linear scan and look back' does not work?
+因为不是每一个index都可以切开，所以：
+M[0] = 0
+M[1] = empty
+M[2] = 0
+M[3] = empty
+M[4] = M[2] + M[2] + cost of 4
+M[5] = empty
+M[6] = empty
+M[7] = M[4] + M[3] + cost of 7 (because we want to find the way to cut, e.g. we use M[4] and M[3], but we don't have M[3], so it's invalid)
+                               (this 'M[3]' is M[7 ~ 4], not M[3 ~ 0], but we only have the 'M[3]' that stores M[3 ~ 0], (and this M[3 ~ 0] is invalid, but this M(7 ~ 4) should be valid))
+
+Therefore, we need to figure out a new way to represent the units?
+
+  从中心开花，[index = 0, 1, 2, 3, N-1], for each M[i, j], we ususlly need to try out all possible k that (i < k < j), M[i, j] = max (M[i, k] +/-/* M(k, j)) (for all possible k) 
+
+M[i][j] represents what?
+the minimum cost of cutting the wood between index i and index j in the input array A.
+
+So the final solution (return value) should be M[0][4]  (this number is the index in array A)
+
+Base case: The shorest wood piece that cannot be cut any further
+	M[0][1] = 0
+	M[1][2] = 0
+	...
+	M[i][i + 1] = 0
+ 
+induction rule:
+size = 1 (base case) adjacent index [left = i, right = i + 1]:
+	for example, M[0][1] = M[1][2] = M[2][3] = M[3][4] = 0
+
+size = 2 [left = i, right = i + 2]
+	for example, M[0][2], M[1][3], M[2][4]
+	(1) M[0][2] = M[0][1] + M[1][2] + (A[2] - A[0]) = 4
+		      左大段    右大段    cost of the cutting
+	(2) M[1][3] = M[1][2] + M[2][3] + (A[3] - A[1]) = 5
+		      左大段    右大段    cost of the cutting
+	(3) M[2][4] = M[2][3] + M[3][4] + (A[4] - A[2]) = 6
+		      左大段    右大段    cost of the cutting
+
+size = 3 [left = i, right = i + 3]
+	for example, M[0][3], M[1][4]
+	(1) M[0][3] 
+	case 1: we first cut at index 1
+		M[0][1] + M[1][3] + (A[3] - A[0]) = 0 + 5 + 7 = 12
+	case 2: we first cut at index 2
+		M[0][2] + M[2][3] + (A[3] - A[0]) = 4 + 0 + 7 = 11
+	M[0][3] = min(case1, case2) = 11
+
+	(2) M[1][4] = 
+	case 1: we first cut at index 2
+		M[1][2] + M[2][4] + (A[4] - A[1]) = 0 + 6 + 8 = 14
+	case 2: we first cut at index 3
+		M[1][3] + M[3][4] + (A[4] - A[1]) = 5 + 0 + 8 = 13
+	M[1][4] = min(case1, case2) = 13
+
+......
+
+填表：
+
+index 0 1 2 3 4
+   0  x 0 x x x
+   1  x x 0 x x
+   2  x x x 0 x
+   3  x x x x 0
+   4  x x x x x
+
+	|	
+        
+index 0 1 2 3 4
+   0  x 0 4 x x
+   1  x x 0 5 x
+   2  x x x 0 6
+   3  x x x x 0
+   4  x x x x x
+
+Observation: in order to fill in a value at M[i][j], we must know the value to its left and its bottom.
+             so we will fill in the table form bottom up and from left to right.
+
+Time = O(n^2 ^ n)	
+       2d dp | each time we look up all possible cut (cost O(n)) 
+
+Space = O(n^2)
+
+
+
+Q4.2 沙子归并
+Q4.2.PNG
+
+
+
+
+
+
+
+
+
+
+
+
+

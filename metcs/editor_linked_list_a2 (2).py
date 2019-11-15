@@ -8,7 +8,10 @@ Created on Thu Oct 24 13:05:21 2019
 N_PTR = 0; P_PTR = 1; DATA = 2
 x_str = """Monday
 Tuesday
-Wednesday"""
+Wednesday
+Thursday
+Firday
+"""
 
 x_list = x_str.split('\n')
 a = [None, None,'Monday']; b = [None, None, 'Tuesday']; 
@@ -140,17 +143,19 @@ def cmd_ddp_easy(start, end, z, delta): # transpose adjacene tlines
         
 # hard - relink pointers    
 # fix it at home 
-def cmd_ddp_hard(start, end, z, delta): # transpose adjacene tlines
-   next_record = z[N_PTR]
-   x = z[P_PTR]
-   y = next_record[N_PTR]
-   x[N_PTR] = next_record
-   next_record[N_PTR ] = z
-   z[N_PTR] = y
-   y[P_PTR] = z
-   z[P_PTR] = next_record
-   next_record[P_PTR] = x
-   return start, end, z, delta
+def cmd_ddp_hard(start, end, z, delta): # transpose adjacene tlines   . -> z -> .   ->    None
+    next_record = z[N_PTR]                                      #     x         next_rec  y
+    if next_record: # if next_record is not none
+        x = z[P_PTR]
+        y = next_record[N_PTR]
+        x[N_PTR] = next_record
+        next_record[N_PTR ] = z
+        z[N_PTR] = y
+        if y: # if y is not none
+            y[P_PTR] = z
+        z[P_PTR] = next_record
+        next_record[P_PTR] = x
+    return start, end, z, delta
    
 
 def cmd_dd(start, end, z, delta): # delete till end of line
@@ -160,10 +165,13 @@ def cmd_dd(start, end, z, delta): # delete till end of line
    return start, end, z, delta
 
 def cmd_X(start, end, z, delta): # delete char to left of cursos
+    print(delta)
     if delta > 0:
         cur_line = z[DATA]
+        print(cur_line)
         new_line = cur_line[ : delta-1] + cur_line[delta : ]
         z[DATA] = new_line
+        print(new_line)
         delta = delta - 1
     return start, end, z, delta
 
@@ -192,13 +200,40 @@ def cmd_insert_line(start, end, z, delta, new_string):
         end = new_node
         return start, end, new_node, 0
     
-    
-    
-    
-    
-    
-    
+def cmd_wq(start, end, z, delta, address):
+    pointer = start
+    f = open(address ,'w')
+    while pointer: 
+        if pointer == z:
+            f.write(pointer[DATA][:delta] + '$' + pointer[DATA][delta:] + '\n')
+        else:
+            f.write(pointer[DATA] + '\n')
+        pointer = pointer[N_PTR]
+    f.close()
+    print('finished')
+    return
 
+def cmd_res(start, end, z, delta):
+    res = ''
+    pointer = start
+    while pointer: 
+        if pointer == z:
+            res += pointer[DATA][:delta] + '$' + pointer[DATA][delta:] + '\n'
+        else:
+            res += pointer[DATA] + '\n'
+        pointer = pointer[N_PTR]
+    return res
+
+def cmd_rev(start, end, z, delta):
+    if start == None:
+        return start, end, z, delta
+
+    new_start, end, z, delta = cmd_rev(start[N_PTR], end, z, delta)
+    temp = start[N_PTR]
+    start[N_PTR] = start[P_PTR]
+    start[P_PTR] = start[N_PTR]
+
+    return new_start, start, z, delta
     
 new_start, new_end = construct_linked_list(x_str)
 z = get_record(new_start, new_end, 1)
@@ -206,52 +241,63 @@ delta = 3
 
 print_file(new_start, new_end, z, delta)
 
-"""
+print('q1: move left')
 print_file(new_start, new_end, z, delta)
 new_start, new_end, z, delta = cmd_h(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta)   
-"""
-"""
+
+print('q2: move right')
 new_start, new_end, z, delta = cmd_I(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta)   
-"""
-"""
+
+print('q3: transpose two chars')
 new_start, new_end, z, delta = cmd_D(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q4: vertical down')
 new_start, new_end, z, delta = cmd_k(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
-new_start, new_end, z, delta = cmd_n(new_start, new_end, z, delta, 'nnn')
+
+print('q5: find word')
+new_start, new_end, z, delta = cmd_n(new_start, new_end, z, delta, 'day')
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q6: transpose lines 1')
 new_start, new_end, z, delta = cmd_ddp_easy(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q6: transpose lines 2')
 new_start, new_end, z, delta = cmd_ddp_hard(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q7: delet remain line')
 new_start, new_end, z, delta = cmd_dd(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q8: delete char to left of cursos')
 new_start, new_end, z, delta = cmd_X(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q9: start file')
 new_start, new_end, z, delta = cmd_start_file(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
-"""
+
+print('q10: end file')
 new_start, new_end, z, delta = cmd_end_file(new_start, new_end, z, delta)
 print_file(new_start, new_end, z, delta) 
-"""
+
+print('q11, insert')
 new_start, new_end, z, delta = cmd_insert_line(new_start, new_end, z, delta, 'saturday')
 print_file(new_start, new_end, z, delta) 
 
+print('q12 write file')
+cmd_wq(new_start, new_end, z, delta, 'C:\\Users\\liuyu\Desktop\\2019_summer\\metcs\\q12_output.txt')
+print()
 
+print('q13 restore to string with cursor')
+string = cmd_res(new_start, new_end, z, delta)
+print(string)
+
+print('q14: reverse the doubly linked list')
+new_start, new_end, z, delta = cmd_rev(new_start, new_end, z, delta)
+print_file(new_start, new_end, z, delta)

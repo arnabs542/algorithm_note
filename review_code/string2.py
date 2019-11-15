@@ -144,6 +144,75 @@ class Solution151:
         return slow
 
 # sliding windows
+# longest unique substring
+class Solution3(object):
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        if len(s) <= 1:
+            return len(s)
+        
+        slow = 0
+        fast = 1
+        global_max = 1
+        temp = fast - slow
+        hashset = set(s[0])
+        
+        while fast < len(s):
+            if s[fast] not in hashset:
+                hashset.add(s[fast])
+                fast += 1
+                temp += 1
+                global_max = max(global_max, temp)
+            else: 
+                hashset.remove(s[slow])
+                slow += 1
+                temp -= 1
+                
+        return global_max
+
+# Longest Substring with At Most Two Distinct Characters (sliding window)
+class Solution159(object):
+    def lengthOfLongestSubstringTwoDistinct(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        if len(s) <= 1:
+            return len(s)
+        
+        slow = 0
+        fast = 1               # I will kepp the string between slow and fast always valid
+        temp = fast - slow
+        global_max = 0
+        hashtable = {s[0]: 1} # I will keep the hashset always valid
+        
+        while fast < len(s):
+            if s[fast] in hashtable:
+                hashtable[s[fast]] += 1
+                fast += 1
+                temp += 1
+                global_max = max(global_max, temp)
+            
+            elif s[fast] not in hashtable and len(hashtable) < 2:
+                hashtable[s[fast]] = 1
+                fast += 1
+                temp += 1
+                global_max = max(global_max, temp)
+            
+            elif s[fast] not in hashtable and len(hashtable) == 2:
+                while len(hashtable) == 2:
+                    hashtable[s[slow]] -= 1
+                    if hashtable[s[slow]] <= 0:
+                        hashtable.pop(s[slow])
+                    slow += 1
+                temp = fast - slow
+            
+        return global_max
+        
+
 class Solution1234:
     def balancedString(self, s: str) -> int:
         hashmap = {'Q': 0, 'W': 0, 'E': 0, 'R': 0}

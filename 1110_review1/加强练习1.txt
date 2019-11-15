@@ -1,0 +1,292 @@
+L21 加强练习 1
+
+Q1 element deduplication/removal in an array.
+
+// 快慢指针，同向而行
+Q1.1 给一个排好序的数组，消除里面重复的元素，对于重复元素只保留一个。
+
+Q1.1.PNG
+slow,fast从1起始
+input[fast] == input[slow - 1]
+
+slow 先替换再++，结果不包括slow
+slow 先++再替换，结果包括slow
+
+Q1.2 最多只保留两个
+slow, fast 从2起始
+只需要input[fast] == input[slow - 2]
+因为array是sort的，所以直接比较第-2个元素就可以了
+
+follow up     最多只保留k个
+slow, fast 从k开始
+只需要比较input[fast] == input[slow - k]
+
+Q1.3 对于重复的元素一个都不保留
+index 0  1 2 3 4
+input 1  1 2 3 3
+      s
+      f1 f2
+
+solution:
+slow: all elements to the left hand side of slow(not including slow) are the final results to regutn.
+fast2: current index
+fast1: start of a new char
+
+check fast2 - fast1 == 1 ? to determine 
+
+my solution:
+count the number of the same adjancent number, if count == 1, copy to slow and slow++, else no operation
+
+Q1.4 unsort array, deduplication for adjacent leters repeatedly (taught already in previous class)
+
+a b b b b a z w -> a a z w -> z w
+
+// 两个指针相向而行
+Q1.5 Given an array of random numbers. Push all the zero's of a given array to the end of the array.
+For example, if the given array is {1, 9, 8, 4, 0, 0, 2, 7, 0 6, 0}, it should be changed to {1, 9, 8, 4, 2, 7, 6, 0, 0, 0, 0}
+The order of all other elements can be changed. Expected time complexity is O(n) and extra space is O(1)
+
+recall class 1 quicksort
+	two pointers move in opposite directions
+
+Left index: all elements to the left hand side of Left are non zeros
+Right index: all elements to the right hand side of Right are all zeros
+[Left, Right] = unexplored subarray
+
+Follow up:
+Q1.5.2 // 使用快慢指针
+Given an array of random numbers. Push all the zero's of a given array to the end of the array.
+For example, if the given array is {1, 9, 8, 4, 0, 0, 2, 7, 0 6, 0}, it should be changed to {1, 9, 8, 4, 2, 7, 6, 0, 0, 0, 0}
+The order of all other elements should be same. Expected time complexity is O(n) and extra space is O(1)
+
+1, 9, 8, 4, 0, 0, 2, 7, 0, 6, 0
+S
+F
+
+slow: left hand side of slow (excluded slow) must be non zero
+fast: current index
+return slow, and change slow and its right hand side to zeros.
+
+隔板题：
+1. 同向而行：Two pointers moving in the same direction
+基本思想，一个变量记录当前指针位置(fast index)，一个变量记录隔板位置(slow index)
+
+性质1：slow 隔板左边是处理好得元素，当前指针fast右边是未处理得元素，隔板和当前指针之间得区域是无用得元素。
+每次只要分析当前元素性质是否要加入或者移动slow隔板就可以了
+
+性质2：用快慢两个指针通向而行，处理完毕后，return的结果中，每个int char的相对位置不变
+
+2. 想向而行：Two pointers moving in opposite direction
+基本思想：用两个变量，一个变量记录左边隔板位置（=left index）,一个变量记录右边隔板位置（=right index）
+
+性质1：left左边是处理好的元素，right右边也是处理好的元素，两个隔板中间是未处理的区域
+
+性质2：处理完毕之后，return的结果中，每个int/char的相对位置可能发生变化
+
+
+Q2. Array number comparisons
+Q2.1 Use the least number of comparisons to find the largest and smallest number.
+
+1 2 3 4 3 6 5 8 7
+
+solution 1:
+for (n) ... max min => O(2n)
+
+Solution 2: best
+1 2 | 4 3 | 6 5 | 8 7
+
+First round: n/2
+small 1 3 5 7 => the global min must be here => n/2
+large 2 4 6 8 => the global max must be here => n/2
+
+Total number of comparisons = 3n/2 = O(1.5n)
+
+Q2.2 How to use the least numbeer of comparisons to find the largest and second largest number?
+
+Better idea:
+
+		8 [2,7,4]
+           4[3 1]        8[2 7]
+        3[2]   4[1]    7[5]    8[2]
+       3  2   4   1   7   5   8   2
+
+每次两两比较，将比输的放入到后面[] 中，两个较大的继续比，并将比输的添加到[] 中。
+最后剩下的是最大值，后面的logn的[]中一定有第二大的值
+
+Total number of comparisons = n + log(n)
+
+
+Q3. 2D array print in spiral order or rotate
+Q3.1 How to print 2D array in spiral order (N X N)
+
+Q3.2 How to rotate an N X N matrix clockwise by 90 degree
+和3.1一样 剥洋葱
+
+
+Q4： BFS print binary tree
+Q4.1 classical way to print the tree level by level
+
+BFS1 - use queue
+
+Key question: when should we change layer to the next
+
+Solution: use a value to record the size of the queue on the current level before printing the first element of this level
+
+
+Q4.2 classical way to print the tree level by level in a zig-zag way
+
+Case1: if we on the odd level: do the same as BFS1
+expand a node from the left end of the queue,
+generate left and then right child and insert them to the right end of the deque
+
+Case2: if we are on the even level:
+expand a node from the right end of the deque, 
+generate right and then left child, and insert them to the left end of the deque
+
+换行也需要记录每行开始时候的size
+
+
+Q5 Lowest Common Ancestor in a binary tree
+Q5.1 RECURSION 2 原题 (assume no parent pointers)
+
+Q5.2 Assume we do have parent pointers in each node
+
+class TreeNode {
+	int value;
+	TreeNode left;
+	TreeNode right;
+	TreeNode parent;
+}
+
+Method 1:
+step1: keep looking up from a and b, to find height(a) and height(b)
+
+step2: move the one with larger height value up by [height(a) - height(b)]
+
+step3: move a and b together one step by one step until a == b
+
+
+Method 2:
+step1: from a, keep looking up, and store all ancestors of a to HashSet(???) 9 4 2 1
+step2: from b, keep looking up one by one, until we find (not store) the current node in the HashSet
+
+
+Q5.3 Lowest common ancestors of k nodes. (No parent pointers)
+
+			1
+                     /      \
+                    2=d      3
+                   /  \     /  \
+                  4   5=a  6   7=b
+                 / \
+                 8  9=c
+
+*** General ideas to solve k-something problem
+
+Method 1: Binary reduction 1 2 3 4 5 6 7 8        k/2
+                            1   4   5   8         k/4
+                              1       8           k/8
+
+Call how many times of LCA(node a, node b)?
+O(kn)
+
+Method 2: iterative
+    12 -> 3
+          13 -> 4
+                14 -> 5
+                      15 ...
+
+Call how many times of LCA(node a, node b)?
+O(kn)
+
+Method 3: k-way all together 
+
+use a hashset to store the node in one path
+
+Q5.3.PNG
+ 
+Q5.4 LCA for two nodes in k-nary Tree
+			root(c)
+                     /////|||\\\\\
+                         a     b
+
+Q5.4.png
+
+用for loop访问每一个孩子，记录有多少不为null的，如果为两个，返回root，如果为一个，返回该孩子，如果为0，返回null。
+
+
+Q5.5 LCA for k nodes in k-nary Tree
+
+Q5.5.png
+
+添加hashset记录k个nodes，
+counter只要大于1就返回root
+
+
+Q5.6 LCA for two nodes a and b in a very large tree that contains billions of nodes, given 10000 machines.
+
+Mapper: 1 job -> distribute to 10000 machines
+Reducer: collect results from each mapper (machines) to go aggregation / post-processing
+
+E.G.: 
+Assume we have 32 machines, and the data is relatively balanced
+Solution: map-reduce
+2^5 = 32. So we have 32 nodes in level 5.
+
+Case 1: both nodes a and b are within top 5 layers. (we can run BFS1 with in top 5 layers)
+	Call LCA(root, a, b, level_limit=5)
+
+Case 2: either node or node b is within top 5 layers.
+	Assume a is on top 5 layers.
+	Call find(root1, b), find(root2, b), ... , find(root32, b)
+	Say, M7 retruns that I found b in this sub tree
+	Call LCA(root, a, root7, level_limit = 5)
+
+Case 3: neither node a nor node is within top 5 layers.
+	Call LCA(root1, a, b), LCA(root2, a, b), ... ,LCA(root32, a, b)
+ 	
+	case 3.1 a and b are in different machines.
+	in this case, there must be exactly two machines that find non-null
+	
+	case 3.2 a and b are in different machines.
+	in this case, there only one machine return non-null
+		case 3.2.1 if it  returns a or b: one node is the ancestor of the other node
+		case 3.3.3 if it returns c: a and b are both in the tree and c is the LCA
+
+
+Assume nodes or machine are not equals
+50 machines with 32 nodes
+
+take 50 nodes in different level of the tree, and then distribute the 50 nodes into separate machine
+
+
+Q5.7 LCA in binary search tree
+
+		10
+               /  \
+              5    15
+             / \   / \
+            2   7 12  20
+           /
+          1
+
+a = 12 
+b = 20
+
+find the node c that a < b < c 
+
+time = O(height)
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
