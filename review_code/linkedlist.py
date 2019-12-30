@@ -141,3 +141,66 @@ class Solution86:
         
         return smalldummy.next
 
+# practice
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+# add 2 number with linked list
+class Solution2:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(None)
+        newHead = dummy
+        
+        extra = 0
+        
+        while l1 and l2:
+            temp = l1.val + l2.val + extra
+            
+            if temp >= 10:
+                extra = 1
+                temp -= 10
+            else:
+                extra = 0
+            
+            newHead.next = ListNode(temp)
+            newHead = newHead.next
+            
+            l1 = l1.next
+            l2 = l2.next
+            
+        while l1:
+            temp = l1.val + extra
+            if temp >= 10:
+                extra = 1
+                temp -= 10
+            else:
+                extra = 0
+            newHead.next = ListNode(temp)
+            newHead = newHead.next
+            l1 = l1.next
+                
+        while l2:
+            temp = l2.val + extra
+            if temp >= 10:
+                extra = 1
+                temp -= 10
+            else:
+                extra = 0
+            newHead.next = ListNode(temp)
+            newHead = newHead.next
+            l2 = l2.next
+        
+        if extra != 0:
+            newHead.next = ListNode(extra)
+        
+        return dummy.next
+            

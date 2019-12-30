@@ -45,3 +45,46 @@ class Solution138:
             curr = curr.next
                 
         return newhead
+
+
+# Definition for a Node.
+class Node:
+    def __init__(self, val, neighbors):
+        self.val = val
+        self.neighbors = neighbors
+
+# Q1.2 copy graph that might have circles
+class Solution131:
+    def cloneGraph(self, node: 'Node') -> 'Node':
+        if node == None:
+            return None
+        
+        # newnode = Node(node.val, [])
+        
+        # hashmap to record the original node and the cloned node
+        hashmap = {}
+        
+        def dfs(node, hashmap):
+            # 2 base cases
+            if node in hashmap:
+                return hashmap[node]
+            
+            # because the node is not in the hashmap, we add the ndoe into the hashmap
+            # and we need to copy it
+            # firstly copy the val
+            hashmap[node] = Node(node.val, [])
+            
+            # then we want to copy the neighbors
+            for nei in node.neighbors:
+                # (wrong, why?)if we want to copy the neighbors, we need to copy the neighbor nodes at first
+                # if nei not in hashmap:
+                #     hashmap[nei] = Node(nei.val, [])
+                
+                # if not none, we add the copied neighbors into the copied node's neighbors
+                hashmap[node].neighbors.append(dfs(nei, hashmap))
+                    
+            return hashmap[node]
+        
+        dfs(node, hashmap)
+        
+        return hashmap[node]
