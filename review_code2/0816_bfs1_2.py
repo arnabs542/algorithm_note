@@ -272,6 +272,34 @@ class Solution:
         
         return bfs(root)
 
+# leet code 958
+# is complete tree?
+# also utilize the index property for heap
+# we just care about the total number of the node we have, and compare with the position index.
+class Solution958:
+    def isCompleteTree(self, root: TreeNode) -> bool:
+        # utilize the position
+        # initial state
+        queue = deque([(root, 1)])
+        counter = 0
+        last_id = 0
+        
+        while queue:
+            for i in range(len(queue)):
+                temp = queue.popleft()
+                counter += 1
+                
+                last_id = temp[1]
+                
+                if temp[0].left:
+                    queue.append((temp[0].left, 2 * temp[1]))
+                    
+                if temp[0].right:
+                    queue.append((temp[0].right, 2 * temp[1] + 1))
+            
+        if counter != last_id:
+            return False
+        
 
 # is bipartie
 # we maintaince a hashtable to keep track whether the graph is valid.
