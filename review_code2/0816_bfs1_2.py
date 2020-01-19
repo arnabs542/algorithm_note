@@ -395,4 +395,52 @@ class Solution547:
             return counter
         
         return bfs(M)
-                    
+
+# leetcode 127 
+# word ladder
+#    
+from collections import deque
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        
+#            hit
+#          /     
+#         hot                       dict {hot: 1, dot: 2, log:3}
+#         /   
+#          dot  
+#       /   |   \
+#      dog  hot   lot
+#    /  |  \   
+#   log cog dot  
+# dog
+# curr_distance: 4
+# queue: lot log cog
+# dict:  hit:0  hot:1  dot:2 dog:3 lot:3 log:4 cog:4
+
+        def bfs(beginWord, endWord, wordList):
+            queue = deque([(beginWord)])
+            hashset = set(beginWord)
+            wordList = set(wordList)
+            distance = 1
+            
+            while queue:
+                length = len(queue)
+                for i in range(length):
+                    temp = queue.popleft()
+                    if temp == endWord:
+                        return distance
+
+                    # check if there is any one diff word
+                    for i in range(len(temp)):
+                        for j in "abcdefghijklmnopqrstuvwxyz":
+                            word = temp[:i] + j + temp[i+1:]
+
+                            if word in wordList and word not in hashset:
+                                queue.append(word)
+                                hashset.add(word)
+                
+                distance += 1
+                            
+            return 0
+
+        return bfs(beginWord, endWord, wordList)
