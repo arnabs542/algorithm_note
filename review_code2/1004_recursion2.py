@@ -59,4 +59,46 @@ class Solution408:
                 return helper(word[counts:], abbr[counts // 10 + 1:])
                 
         return helper(word, abbr)
-                
+
+# leetcode 48
+# change of spiral matrix, rotate the matrix in-place
+class Solution_48:
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        self.n = len(matrix)
+        
+        def helper(matrix, lev):
+            if self.n - 2 * lev == 1:
+                # new_matrix[lev][lev] = matrix[lev][lev]
+                return
+            if self.n - 2 * lev == 0:
+                return
+            arr_copy = matrix[lev][lev:self.n - 1 - lev]
+            # up, copy the right side matrix into the arr_copy
+            for i in range(lev, self.n - 1 - lev):
+                temp = matrix[i][self.n - 1 - lev]
+                print(i, self.n - 1 - lev, lev)
+                matrix[i][self.n - 1 - lev] = arr_copy[i - lev]
+                arr_copy[i - lev] = temp
+            # right, copy the down side matrix into the arr_copy
+            for i in range(lev, self.n - 1 - lev):
+                temp = matrix[self.n - 1 - lev][self.n - 1 - i]
+                matrix[self.n - 1 - lev][self.n - 1 - i] = arr_copy[i - lev]
+                arr_copy[i - lev] = temp
+            # down, copy down side to left side
+            for i in range(lev, self.n - 1 - lev):
+                temp = matrix[self.n - 1 - i][lev]
+                matrix[self.n - 1 - i][lev] = arr_copy[i - lev]
+                arr_copy[i - lev] = temp
+            # left, we need not copy any thing, becasue it's already be the final round
+            for i in range(lev, self.n - 1 - lev):
+                matrix[lev][i] = arr_copy[i - lev]
+            
+            helper(matrix, lev + 1)
+            
+            return
+
+        # new_matrix = [[0 for i in range(self.n)] for i in range(self.n)]
+        helper(matrix, 0)

@@ -444,3 +444,29 @@ class Solution:
             return 0
 
         return bfs(beginWord, endWord, wordList)
+
+# special: diagonal order traversal
+class Solution:
+    def printTree(self, root: TreeNode) -> List[List[str]]:
+        queue = deque([root])
+        ret = []
+    
+        while queue:
+            length = len(queue)
+            curr_lev = []
+            
+            while length > 0:
+                temp = queue.popleft()
+                if temp.right:
+                    length += 1
+                    queue.appendleft(temp.right)
+                if temp.left:
+                    queue.append(temp.left)
+                
+                curr_lev.append(temp.val)
+                
+                length -= 1
+                
+            ret.append(curr_lev)
+        
+        return ret

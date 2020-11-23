@@ -1,0 +1,19 @@
+
+Z	java:S106^"9Replace this use of System.out or System.err by a logger.(•ÄõÒÿÿÿÿÿ8‰Êß.
+G
+java:S2160i"+Override the "equals" method in this class.(»›8¡À­›ß.
+Z	java:S106a"9Replace this use of System.out or System.err by a logger.(Ÿ¯òàúÿÿÿÿ8ÁÁØœß.
+L
+java:S3740_"/Provide the parametrized type for this generic.(ÙÙÎ²8•¶×œß.
+K
+java:S1125*")Remove the literal "false" boolean value.(”üÉÑûÿÿÿÿ8À¹÷›ß.
+F
+java:S1125U")Remove the literal "false" boolean value.(­÷Ÿõ8íºĞœß.
+r
+java:S1104j"PMake freq a static final constant or non-public and provide accessors if needed.(Şº·ˆıÿÿÿÿ8İ¦„›ß.
+Q
+java:S3740L"/Provide the parametrized type for this generic.(Ş¡©éşÿÿÿÿ8‘ù œß.
+F
+java:S11252")Remove the literal "false" boolean value.(üÜ ¨8Ÿ¿€œß.
+Z	java:S106f"9Replace this use of System.out or System.err by a logger.(•ÄõÒÿÿÿÿÿ8°éß.
+Z	java:S106d"9Replace this use of System.out or System.err by a logger.(ŞÒ—üÿÿÿÿ8¢½àœß.
